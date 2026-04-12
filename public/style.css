@@ -1,0 +1,298 @@
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg:          #0a0a0a;
+  --bg-card:     #111111;
+  --bg-elevated: #1a1a1a;
+  --border:      #222222;
+  --border-mid:  #2e2e2e;
+  --text:        #e8e8e8;
+  --text-muted:  #555555;
+  --text-dim:    #888888;
+  --red:         #e53935;
+  --red-glow:    rgba(229, 57, 53, 0.25);
+  --red-dim:     rgba(229, 57, 53, 0.08);
+  --green:       #4ade80;
+  --green-dark:  #166534;
+  --green-bg:    #0d2318;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 20px 64px;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ──────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+/* ── Header ──────────────────────────────────────── */
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* ── Recorder ────────────────────────────────────── */
+.recorder-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.waves-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ripple rings */
+.wave {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--red);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.waves-container.recording .wave-1 { animation: ripple 2.1s 0.0s infinite ease-out; }
+.waves-container.recording .wave-2 { animation: ripple 2.1s 0.7s infinite ease-out; }
+.waves-container.recording .wave-3 { animation: ripple 2.1s 1.4s infinite ease-out; }
+
+@keyframes ripple {
+  0%   { transform: scale(0.65); opacity: 0.7; }
+  100% { transform: scale(1.9);  opacity: 0;   }
+}
+
+/* Button */
+.record-btn {
+  position: relative;
+  z-index: 2;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid var(--border-mid);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  outline: none;
+}
+
+.record-btn:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 36px var(--red-glow);
+}
+
+.record-btn:focus-visible {
+  box-shadow: 0 0 0 3px var(--red-glow);
+}
+
+/* Inner icon — circle → rounded square on recording */
+.record-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--red);
+  border-radius: 50%;
+  transition: border-radius 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.3s, height 0.3s;
+}
+
+.waves-container.recording .record-btn {
+  border-color: var(--red);
+  background: #160a0a;
+  box-shadow: 0 0 48px var(--red-glow), inset 0 0 24px var(--red-dim);
+}
+
+.waves-container.recording .record-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+  animation: icon-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes icon-pulse {
+  from { opacity: 0.75; transform: scale(0.93); }
+  to   { opacity: 1;    transform: scale(1.07); }
+}
+
+/* Status & Timer */
+.status {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2px;
+  min-height: 1.2em;
+  transition: color 0.2s;
+}
+
+.status.active {
+  color: var(--red);
+}
+
+.timer {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 4px;
+}
+
+/* ── Waveform canvas ─────────────────────────────── */
+.visualizer-section {
+  width: 100%;
+}
+
+#waveformCanvas {
+  display: block;
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.channel-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.channel-labels.visible {
+  opacity: 1;
+}
+
+/* ── Info box ────────────────────────────────────── */
+.info-box {
+  width: 100%;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: #120f00;
+  border: 1px solid #2c2300;
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.info-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #6b5700;
+  color: #a88a00;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.info-box p {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: #9a8040;
+}
+
+.info-box p strong {
+  color: #c9aa55;
+}
+
+/* ── Download ────────────────────────────────────── */
+.download-section {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: fade-up 0.35s ease;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.recording-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 32px;
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid var(--green-dark);
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  outline: none;
+}
+
+.download-btn:hover {
+  background: #0f2e1e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(74, 222, 128, 0.15);
+}
+
+.download-btn:active {
+  transform: translateY(0);
+}
+
+.download-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+}
