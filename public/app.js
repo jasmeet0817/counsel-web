@@ -1,5 +1,7 @@
 'use strict';
 
+const COUNSEL_API_BASE = 'http://0.0.0.0:8008';
+
 class CounselRecorder {
   constructor() {
     this.isRecording   = false;
@@ -17,6 +19,7 @@ class CounselRecorder {
     this.hasSysAudio   = false;
 
     // DOM refs
+    this.companyNameEl   = document.getElementById('companyName');
     this.recordBtn       = document.getElementById('recordBtn');
     this.wavesContainer  = document.getElementById('wavesContainer');
     this.statusEl        = document.getElementById('status');
@@ -208,6 +211,26 @@ class CounselRecorder {
     this.downloadSection.style.display = 'flex';
     this.setStatus('Recording saved — ready to download');
     this.drawIdleWaveform();
+
+    this.storeRecording(this.recordedBlob);
+  }
+
+  /* ── Store recording (fire and forget) ──────────── */
+  storeRecording(blob) {
+    const companyName = this.companyNameEl.value.trim();
+    if (!companyName) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      // reader.result is "data:<mime>;base64,<data>" — strip the prefix
+      const base64 = reader.result.split(',')[1];
+      fetch(`${COUNSEL_API_BASE}/counsel/recordings/store/`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ company_name: companyName, audio_bytes: base64 }),
+      }).catch(() => {}); // fire and forget
+    };
+    reader.readAsDataURL(blob);
   }
 
   /* ── Download ───────────────────────────────────── */

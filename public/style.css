@@ -67,6 +67,34 @@ header h1 {
   text-transform: uppercase;
 }
 
+/* ── Company input ───────────────────────────────── */
+.company-input-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.company-input-row input {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 14px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #f0f0f0;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.company-input-row input::placeholder {
+  color: #555;
+}
+
+.company-input-row input:focus {
+  border-color: #e53935;
+}
+
 /* ── Recorder ────────────────────────────────────── */
 .recorder-section {
   display: flex;
