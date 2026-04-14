@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting — Counsel</title>
+  <link rel="icon" href="favicon.svg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Hamburger button (mobile only) -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Mobile backdrop -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Left sidebar -->
+  <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">Counsel</div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="index.html#recorder" class="nav-link" data-page="recorder">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          Recorder
+        </a>
+      </li>
+      <li>
+        <a href="index.html#history" class="nav-link active" data-page="history">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          History
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main content -->
+  <div class="app-main" id="appMain">
+    <div class="meeting-page">
+
+      <div class="meeting-back">
+        <a href="index.html#history" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          History
+        </a>
+      </div>
+
+      <div class="meeting-header">
+        <h2 class="meeting-company" id="meetingCompany">Loading…</h2>
+        <p class="meeting-date" id="meetingDate"></p>
+      </div>
+
+      <!-- Player card -->
+      <div class="player-card" id="playerCard">
+        <audio id="audioEl" preload="metadata"></audio>
+
+        <!-- Seek bar -->
+        <div class="seek-row">
+          <span class="seek-time" id="currentTime">0:00</span>
+          <div class="seek-track" id="seekTrack">
+            <div class="seek-fill" id="seekFill"></div>
+            <input type="range" class="seek-range" id="seekRange" min="0" max="100" step="0.01" value="0" aria-label="Seek">
+          </div>
+          <span class="seek-time" id="totalTime">0:00</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="player-controls">
+          <button class="ctrl-btn" id="backBtn" aria-label="Back 10 seconds">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.32"/>
+            </svg>
+            <span class="ctrl-label">10</span>
+          </button>
+
+          <button class="ctrl-btn play-btn" id="playBtn" aria-label="Play">
+            <svg class="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg class="icon-pause" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+
+          <button class="ctrl-btn" id="fwdBtn" aria-label="Forward 10 seconds">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.32"/>
+            </svg>
+            <span class="ctrl-label">10</span>
+          </button>
+        </div>
+
+        <!-- Speed -->
+        <div class="speed-row">
+          <span class="speed-label">Speed</span>
+          <div class="speed-options" id="speedOptions">
+            <button class="speed-btn" data-rate="0.5">0.5×</button>
+            <button class="speed-btn" data-rate="0.75">0.75×</button>
+            <button class="speed-btn active" data-rate="1">1×</button>
+            <button class="speed-btn" data-rate="1.25">1.25×</button>
+            <button class="speed-btn" data-rate="1.5">1.5×</button>
+            <button class="speed-btn" data-rate="2">2×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transcription -->
+      <div class="transcription-section" id="transcriptionSection">
+        <button class="summary-trigger-btn" id="summaryBtn" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Generate Summary
+        </button>
+
+        <div class="transcription-status" id="transcriptionStatus" hidden>
+          <span class="transcription-spinner"></span>
+          <span id="transcriptionStatusText">Generating summary…</span>
+        </div>
+
+        <div class="transcription-result" id="transcriptionResult" hidden>
+          <button class="transcription-result-toggle" id="transcriptionToggle" aria-expanded="false">
+            Transcription
+            <svg class="transcription-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="transcription-result-body" id="transcriptionBody" hidden></div>
+        </div>
+
+        <div class="transcription-error" id="transcriptionError" hidden>
+          <span id="transcriptionErrorText">An error occurred.</span>
+          <button class="transcription-retry-btn" id="transcriptionRetryBtn">Retry</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="recorder.js"></script>
+  <script src="history.js"></script>
+  <script src="app.js"></script>
+  <script src="meeting-page.js"></script>
+</body>
+</html>
