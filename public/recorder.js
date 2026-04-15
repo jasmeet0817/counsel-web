@@ -77,6 +77,10 @@ class CounselRecorder {
   /* ── Start ──────────────────────────────────────── */
   async startRecording() {
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error('Microphone access requires a secure context (HTTPS or localhost). Please open this page via https:// or localhost.');
+      }
+
       this.setStatus('Requesting microphone…');
       this.recordBtn.disabled = true;
 
