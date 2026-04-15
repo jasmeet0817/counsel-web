@@ -8,6 +8,7 @@ class CounselUploader {
     this.fileInput     = document.getElementById('uploadFile');
     this.fileLabelEl   = document.getElementById('uploadFileLabel');
     this.statusEl      = document.getElementById('uploadStatus');
+    this.meetingLinkEl = document.getElementById('uploadMeetingLink');
     this.submitBtn     = document.getElementById('uploadSubmitBtn');
     this.uploadZone    = document.getElementById('uploadZone');
 
@@ -49,14 +50,12 @@ class CounselUploader {
 
     if (!companyName) { this._setStatus('Company name is required.', 'error'); return; }
     if (!this.selectedFile) { this._setStatus('Please select an audio file.', 'error'); return; }
-    if (!meetingDate) { this._setStatus('Meeting date is required.', 'error'); return; }
-
     this._setStatus('Uploading\u2026', '');
     this.submitBtn.disabled = true;
 
     try {
       const base64 = await this._fileToBase64(this.selectedFile);
-      const createDate = new Date(meetingDate).toISOString();
+      const createDate = meetingDate ? new Date(meetingDate).toISOString() : null;
 
       const res = await fetch(`${COUNSEL_API_BASE}/counsel/meetings/store/`, {
         method: 'POST',
@@ -70,7 +69,14 @@ class CounselUploader {
       });
 
       if (res.ok) {
+        const data = await res.json();
         this._setStatus('Recording uploaded successfully.', 'success');
+        console.log('Upload response:', data);
+        const meetingId = data && (data.id || (data.meeting && data.meeting.id));
+        if (meetingId) {
+          this.meetingLinkEl.href = `meeting-page.html?id=${encodeURIComponent(meetingId)}`;
+          this.meetingLinkEl.removeAttribute('hidden');
+        }
         this._reset();
       } else {
         this._setStatus(`Upload failed (${res.status}).`, 'error');
@@ -104,5 +110,6 @@ class CounselUploader {
     this.selectedFile        = null;
     this.fileLabelEl.textContent = 'Choose or drag an audio / video file';
     this.uploadZone.classList.remove('file-selected');
+    // keep the meeting link visible after reset so user can still navigate
   }
 }

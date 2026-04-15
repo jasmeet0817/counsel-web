@@ -1089,6 +1089,34 @@ header h1 {
   background: var(--red-dim);
 }
 
+/* ── AI Summary ──────────────────────────────────────── */
+.ai-summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-summary-section[hidden] {
+  display: none;
+}
+
+.ai-summary-list {
+  list-style: none;
+  white-space: normal;
+}
+
+.ai-summary-list li {
+  padding-left: 14px;
+  position: relative;
+}
+
+.ai-summary-list li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
 /* ── Upload page ─────────────────────────────────────── */
 .upload-page {
   width: 100%;
@@ -1225,4 +1253,34 @@ header h1 {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Go to Meeting link-button shown after successful upload */
+.upload-meeting-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  border: 1.5px solid var(--red);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--red);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  box-sizing: border-box;
+}
+
+.upload-meeting-link:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+.upload-meeting-link[hidden] {
+  display: none;
 }

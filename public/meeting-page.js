@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   initMeetingSidebar();
   const recording = await initPlayer();
+  initAiSummary(recording);
   initSummary(recording);
 });
 
@@ -237,10 +238,14 @@ function initSummary(recording) {
 
   if (recording && recording.transcription) {
     showResult(recording.transcription);
-    return;
   }
+
+  if (recording && recording.ai_summary) {
+    return; // summary panel already rendered by initAiSummary; no button needed
+  }
+
   if (recording && recording.summarize_status === 'in_progress') {
-    showStatus('Generating transcription…');
+    showStatus('Generating summary');
     startPolling(window._counselMeetingId);
     return;
   }
@@ -286,7 +291,7 @@ function initSummary(recording) {
     const id = window._counselMeetingId;
     if (!id) { showError('Meeting ID not found.'); return; }
 
-    showStatus('Generating transcription…');
+    showStatus('Generating summary');
 
     let res, data;
     try {
@@ -298,13 +303,18 @@ function initSummary(recording) {
       return;
     }
 
-    if (data.status === 'completed' && data.transcription) {
-      showResult(data.transcription);
+    if (data.status === 'completed') {
+      if (data.meeting) {
+        if (data.meeting.transcription) showResult(data.meeting.transcription);
+        renderAiSummary(data.meeting.ai_summary);
+      } else if (data.transcription) {
+        showResult(data.transcription);
+      }
     } else if (data.status === 'in_progress') {
       startPolling(id);
     } else if (data.status === 'failed') {
-      console.error('Transcription failed:', data);
-      showError('Transcription failed. Please try again.');
+      console.error('Summarization failed:', data);
+      showError('Summarization failed. Please try again.');
     } else {
       console.error('Unexpected response:', data);
       showError('Unexpected response from server.');
@@ -312,7 +322,7 @@ function initSummary(recording) {
   }
 
   function startPolling(id) {
-    showStatus('Generating transcription…');
+    showStatus('Generating summary');
     pollTimer = setInterval(() => pollStatus(id), 5000);
   }
 
@@ -326,13 +336,60 @@ function initSummary(recording) {
       return;
     }
 
-    if (data.status === 'completed' && data.transcription) {
-      showResult(data.transcription);
+    if (data.status === 'completed' && data.meeting) {
+      if (data.meeting.transcription) showResult(data.meeting.transcription);
+      renderAiSummary(data.meeting.ai_summary);
     } else if (data.status === 'failed') {
-      showError('Transcription failed. Please try again.');
+      showError('Summarization failed. Please try again.');
     } else if (data.status === 'not_started') {
-      showError('Transcription was not started. Please try again.');
+      showError('Summarization was not started. Please try again.');
     }
     // 'in_progress' → keep polling
+  }
+}
+
+/* ── AI Summary ──────────────────────────────────── */
+function renderAiSummary(aiSummary) {
+  if (!aiSummary) return;
+
+  const section   = document.getElementById('aiSummarySection');
+  const bgBody    = document.getElementById('bgBody');
+  const queryBody = document.getElementById('queryBody');
+
+  function fillList(el, items) {
+    el.innerHTML = '';
+    if (!Array.isArray(items)) return;
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      el.appendChild(li);
+    });
+  }
+
+  fillList(bgBody,    aiSummary.background);
+  fillList(queryBody, aiSummary.query);
+
+  section.hidden = false;
+}
+
+function initAiSummary(recording) {
+  const bgToggle    = document.getElementById('bgToggle');
+  const queryToggle = document.getElementById('queryToggle');
+  const bgBody      = document.getElementById('bgBody');
+  const queryBody   = document.getElementById('queryBody');
+
+  function wireToggle(btn, body) {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      body.hidden = expanded;
+    });
+  }
+
+  wireToggle(bgToggle,    bgBody);
+  wireToggle(queryToggle, queryBody);
+
+  if (recording && recording.ai_summary) {
+    renderAiSummary(recording.ai_summary);
   }
 }
