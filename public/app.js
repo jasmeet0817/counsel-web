@@ -1,6 +1,6 @@
 'use strict';
 
-const COUNSEL_API_BASE = 'https://counsel-be.bookdialogues.com';
+const COUNSEL_API_BASE = '';
 
 document.addEventListener('DOMContentLoaded', () => {
   new CounselRecorder();
