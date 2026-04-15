@@ -1,6 +1,6 @@
 'use strict';
 
-const COUNSEL_API_BASE = 'https://83.76.73.93:3002/';
+const COUNSEL_API_BASE = 'https://83.76.73.93:3002';
 
 document.addEventListener('DOMContentLoaded', () => {
   new CounselRecorder();
