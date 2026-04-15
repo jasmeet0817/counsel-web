@@ -1,5 +1,6 @@
 'use strict';
 
+// Using localhost proxy
 const COUNSEL_API_BASE = '';
 
 document.addEventListener('DOMContentLoaded', () => {
