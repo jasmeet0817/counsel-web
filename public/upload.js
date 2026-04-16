@@ -54,47 +54,46 @@ class CounselUploader {
     this.submitBtn.disabled = true;
 
     try {
-      const base64 = await this._fileToBase64(this.selectedFile);
+      const mimeType   = this.selectedFile.type || 'audio/webm';
       const createDate = meetingDate ? new Date(meetingDate).toISOString() : null;
 
+      // Step 1: create meeting record + get presigned S3 URL
       const res = await fetch(`${COUNSEL_API_BASE}/counsel/meetings/store/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           company_name: companyName,
           company_url:  companyUrl,
-          audio_bytes:  base64,
+          mime_type:    mimeType,
           create_date:  createDate,
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        this._setStatus('Recording uploaded successfully.', 'success');
-        console.log('Upload response:', data);
-        const meetingId = data && (data.id || (data.meeting && data.meeting.id));
-        if (meetingId) {
-          this.meetingLinkEl.href = `meeting-page.html?id=${encodeURIComponent(meetingId)}`;
-          this.meetingLinkEl.removeAttribute('hidden');
-        }
-        this._reset();
-      } else {
-        this._setStatus(`Upload failed (${res.status}).`, 'error');
+      if (!res.ok) { this._setStatus(`Upload failed (${res.status}).`, 'error'); return; }
+
+      const data = await res.json();
+
+      // Step 2: upload audio directly to S3
+      const s3Res = await fetch(data.upload_url, {
+        method:  'PUT',
+        headers: { 'Content-Type': mimeType },
+        body:    this.selectedFile,
+      });
+
+      if (!s3Res.ok) { this._setStatus('Audio upload to storage failed.', 'error'); return; }
+
+      this._setStatus('Recording uploaded successfully.', 'success');
+      const meetingId = data.meeting?.id;
+      if (meetingId) {
+        this.meetingLinkEl.href = `meeting-page.html?id=${encodeURIComponent(meetingId)}`;
+        this.meetingLinkEl.removeAttribute('hidden');
       }
+      this._reset();
     } catch (_err) {
       this._setStatus('Upload failed. Check your connection.', 'error');
     } finally {
       this.submitBtn.disabled = false;
     }
-  }
-
-  _fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   }
 
   _setStatus(msg, type) {
