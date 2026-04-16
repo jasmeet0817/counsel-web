@@ -6,7 +6,8 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = 3003;
 
-app.use('/counsel', createProxyMiddleware({
+app.use(createProxyMiddleware({
+  pathFilter: '/counsel',
   target: 'https://counsel-be.bookdialogues.com',
   changeOrigin: true,
 }));
