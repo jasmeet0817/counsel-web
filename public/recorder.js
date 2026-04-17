@@ -229,23 +229,29 @@ class CounselRecorder {
   }
 
   /* ── Store recording (fire and forget) ──────────── */
-  storeRecording(blob) {
+  async storeRecording(blob) {
     const companyName = this.companyNameEl.value.trim();
     if (!companyName) return;
 
     const companyUrl = this.companyUrlEl.value.trim();
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      // reader.result is "data:<mime>;base64,<data>" — strip the prefix
-      const base64 = reader.result.split(',')[1];
-      fetch(`${COUNSEL_API_BASE}/counsel/meetings/store/`, {
+    try {
+      // Step 1: create meeting record + get presigned S3 URL
+      const res = await fetch(`${COUNSEL_API_BASE}/counsel/meetings/store/`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ company_name: companyName, company_url: companyUrl, audio_bytes: base64, mime_type: blob.type }),
-      }).catch(() => {}); // fire and forget
-    };
-    reader.readAsDataURL(blob);
+        body:    JSON.stringify({ company_name: companyName, company_url: companyUrl, mime_type: blob.type }),
+      });
+      if (!res.ok) return;
+      const { upload_url } = await res.json();
+
+      // Step 2: upload audio directly to S3
+      await fetch(upload_url, {
+        method:  'PUT',
+        headers: { 'Content-Type': blob.type },
+        body:    blob,
+      });
+    } catch (_) {}
   }
 
   /* ── Download ───────────────────────────────────── */
