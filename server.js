@@ -12,9 +12,13 @@ app.use(createProxyMiddleware({
   changeOrigin: true,
 }));
 
-app.get(['/', '/*.html'], (req, res) => {
+app.get('/', (_req, res) => {
+  res.redirect('/app.html');
+});
+
+app.get('/*.html', (req, res) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.sendFile(path.join(__dirname, 'public', req.path === '/' ? 'index.html' : req.path));
+  res.sendFile(path.join(__dirname, 'public', req.path));
 });
 
 app.use(express.static(path.join(__dirname, 'public'), {

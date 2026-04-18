@@ -2,7 +2,7 @@
 
 ## Script Load Order
 
-In `public/index.html`, scripts must be loaded in dependency order — `app.js` last:
+In `public/app.html`, scripts must be loaded in dependency order — `app.js` last:
 
 ```html
 <script src="recorder.js"></script>
