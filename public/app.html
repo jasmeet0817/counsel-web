@@ -6,8 +6,188 @@
   <title>Counsel</title>
   <link rel="icon" href="favicon.svg" type="image/jpeg">
   <link rel="stylesheet" href="style.css">
+  <style>
+    body.locked > :not(#partnerGate) { visibility: hidden; }
+    #partnerGate {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    #partnerGate.hidden { display: none; }
+    .partner-gate-card {
+      width: 100%;
+      max-width: 360px;
+      background: #0f0f0f;
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 36px 32px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .partner-gate-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.2px;
+      text-align: center;
+    }
+    .partner-gate-subtitle {
+      font-size: 0.82rem;
+      color: #777;
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+    #partnerGateForm {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #partnerGateInput {
+      width: 100%;
+      padding: 12px 14px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    #partnerGateInput:focus { border-color: #e53935; }
+    #partnerGateInput.error {
+      border-color: #e53935;
+      animation: partnerShake 0.32s ease;
+    }
+    @keyframes partnerShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    #partnerGateSubmit {
+      padding: 11px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    #partnerGateSubmit:hover { opacity: 0.88; }
+    .partner-gate-error {
+      font-size: 0.78rem;
+      color: #e53935;
+      text-align: center;
+      min-height: 1em;
+    }
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: #f0f0f0;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .back-btn:hover { background: rgba(255, 255, 255, 0.08); }
+  </style>
 </head>
-<body>
+<body class="locked">
+
+  <div id="partnerGate">
+    <a href="index.html" class="back-btn" aria-label="Back to home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div class="partner-gate-card">
+      <div>
+        <div class="partner-gate-title">Counsel</div>
+        <div class="partner-gate-subtitle">ENTER PARTNER CODE</div>
+      </div>
+      <form id="partnerGateForm" autocomplete="off">
+        <input
+          type="password"
+          id="partnerGateInput"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          spellcheck="false"
+          autofocus>
+        <div class="partner-gate-error" id="partnerGateError"></div>
+        <button type="submit" id="partnerGateSubmit">Enter</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var STORED_HASH = 'e15e2cf3d92ceeec3117dab9d27eb72a4ce1640064c44cb8d0f2cccd56ea9405';
+      var SESSION_KEY = 'partnerAuthed';
+
+      function unlock() {
+        document.body.classList.remove('locked');
+        var gate = document.getElementById('partnerGate');
+        if (gate) gate.classList.add('hidden');
+      }
+
+      if (sessionStorage.getItem(SESSION_KEY) === STORED_HASH) {
+        unlock();
+        return;
+      }
+
+      async function sha256(text) {
+        var buf = new TextEncoder().encode(text);
+        var hash = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(hash))
+          .map(function (b) { return b.toString(16).padStart(2, '0'); })
+          .join('');
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('partnerGateForm');
+        var input = document.getElementById('partnerGateInput');
+        var errorEl = document.getElementById('partnerGateError');
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          errorEl.textContent = '';
+          var value = input.value || '';
+          if (!value) return;
+          var hash = await sha256(value);
+          if (hash === STORED_HASH) {
+            sessionStorage.setItem(SESSION_KEY, hash);
+            unlock();
+          } else {
+            input.classList.add('error');
+            errorEl.textContent = 'Incorrect code';
+            input.value = '';
+            setTimeout(function () { input.classList.remove('error'); }, 400);
+            input.focus();
+          }
+        });
+      });
+    })();
+  </script>
 
   <!-- Hamburger button (mobile only) -->
   <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
