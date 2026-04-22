@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mandamus Petition — Counsel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0a0a0a;
+      --bg-card:     #111111;
+      --bg-elevated: #1a1a1a;
+      --border:      #222222;
+      --border-mid:  #2e2e2e;
+      --text:        #e8e8e8;
+      --text-muted:  #555555;
+      --text-dim:    #888888;
+      --red:         #e53935;
+      --red-glow:    rgba(229,57,53,0.25);
+      --red-dim:     rgba(229,57,53,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Markdown article styles (paper-like) */
+    .petition {
+      font-family: 'Times New Roman', 'Liberation Serif', serif;
+      font-size: 15px;
+      line-height: 1.75;
+      color: #d4d4d4;
+    }
+    .petition h1 { font-size: 1.45rem; font-weight: 700; text-align: center; margin: 1.2em 0 0.7em; color: #fff; }
+    .petition h2 { font-size: 1.2rem;  font-weight: 700; margin: 1em 0 0.5em; color: #fff; }
+    .petition h3 { font-size: 1.05rem; font-weight: 700; margin: 0.9em 0 0.4em; color: #fff; }
+    .petition p  { margin: 0.6em 0; text-align: justify; }
+    .petition ol, .petition ul { margin: 0.6em 0 0.6em 1.6em; }
+    .petition li { margin: 0.3em 0; }
+    .petition blockquote { margin: 0.7em 1em; font-style: italic; color: #bbb; border-left: 2px solid #2e2e2e; padding-left: 0.8em; }
+    .petition pre, .petition code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.9em; color: #e8e8e8; }
+    .petition hr { border: none; border-top: 1px solid #2e2e2e; margin: 1.2em 0; }
+    .petition strong { font-weight: 700; color: #fff; }
+    .petition em { font-style: italic; }
+
+    /* Loading spinner */
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #2e2e2e;
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { h, render } from 'https://esm.sh/preact@10';
+    import { useState, useEffect, useMemo } from 'https://esm.sh/preact@10/hooks';
+    import htm from 'https://esm.sh/htm@3';
+    import { marked } from 'https://esm.sh/marked@14';
+    const html = htm.bind(h);
+
+    const POLL_INTERVAL_MS = 3000;
+
+    function getPetitionId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id') || '';
+    }
+
+    function Loading({ message }) {
+      return html`
+        <div style=${{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '18px' }}>
+          <div class="spinner"></div>
+          <div style=${{ color: '#888', fontSize: '0.95rem' }}>${message}</div>
+          <div style=${{ color: '#444', fontSize: '0.78rem', maxWidth: '420px', textAlign: 'center', lineHeight: 1.5 }}>
+            Drafting can take 30–60 seconds. This page will refresh automatically when the petition is ready.
+          </div>
+        </div>
+      `;
+    }
+
+    function ErrorView({ title, message }) {
+      return html`
+        <div style=${{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', padding: '24px' }}>
+          <div style=${{ fontSize: '0.72rem', fontWeight: 600, color: '#e53935', letterSpacing: '0.7px', textTransform: 'uppercase' }}>
+            ${title}
+          </div>
+          <div style=${{ color: '#ccc', fontSize: '0.95rem', maxWidth: '520px', textAlign: 'center', lineHeight: 1.6 }}>
+            ${message}
+          </div>
+          <a href="./index.html" style=${{
+            marginTop: '12px', padding: '10px 18px', borderRadius: '6px',
+            background: '#e53935', color: '#fff', fontSize: '0.85rem', fontWeight: 600,
+            textDecoration: 'none',
+          }}>← Back to Form</a>
+        </div>
+      `;
+    }
+
+    function Result({ petitionId, petition }) {
+      const htmlBody = useMemo(() => marked.parse(petition || '', { breaks: true }), [petition]);
+      const pdfUrl = `/counsel/writ-petitions/${encodeURIComponent(petitionId)}/pdf/`;
+
+      const ghostBtn = {
+        background: 'transparent', color: '#888', border: '1px solid #2e2e2e',
+        padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500,
+        cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none', display: 'inline-block',
+      };
+      const primaryBtn = {
+        ...ghostBtn,
+        background: '#e53935', color: '#fff', border: '1px solid #e53935', fontWeight: 600,
+      };
+
+      return html`
+        <div style=${{ minHeight: '100vh', background: '#0a0a0a' }}>
+          <div style=${{ position: 'sticky', top: 0, zIndex: 10, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#111', borderBottom: '1px solid #222' }}>
+            <div style=${{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <a href="./index.html" style=${ghostBtn}>← New Petition</a>
+              <span style=${{ color: '#888', fontSize: '0.8rem' }}>Generated Petition</span>
+            </div>
+            <div style=${{ display: 'flex', gap: '8px' }}>
+              <a href=${pdfUrl} style=${primaryBtn}>↓ Download PDF</a>
+            </div>
+          </div>
+          <div style=${{ padding: '48px 20px' }}>
+            <article
+              class="petition"
+              style=${{ maxWidth: '820px', margin: '0 auto', background: '#111', border: '1px solid #222', borderRadius: '12px', padding: '56px 64px' }}
+              dangerouslySetInnerHTML=${{ __html: htmlBody }}
+            ></article>
+          </div>
+        </div>
+      `;
+    }
+
+    function App() {
+      const petitionId = useMemo(getPetitionId, []);
+      const [state, setState] = useState({ status: 'loading', petition: '', error: '' });
+
+      useEffect(() => {
+        if (!petitionId) {
+          setState({ status: 'missing_id', petition: '', error: '' });
+          return;
+        }
+
+        let cancelled = false;
+        let timer = null;
+
+        const poll = async () => {
+          try {
+            const res = await fetch(`/counsel/writ-petitions/${encodeURIComponent(petitionId)}/status/`);
+            if (res.status === 404) {
+              if (!cancelled) setState({ status: 'not_found', petition: '', error: '' });
+              return;
+            }
+            const body = await res.json();
+            if (cancelled) return;
+
+            if (body.status === 'completed') {
+              setState({ status: 'completed', petition: body.petition || '', error: '' });
+              return;
+            }
+            if (body.status === 'failed') {
+              setState({ status: 'failed', petition: '', error: body.error || 'Petition generation failed.' });
+              return;
+            }
+            timer = setTimeout(poll, POLL_INTERVAL_MS);
+          } catch (e) {
+            if (!cancelled) {
+              timer = setTimeout(poll, POLL_INTERVAL_MS);
+            }
+          }
+        };
+
+        poll();
+        return () => { cancelled = true; if (timer) clearTimeout(timer); };
+      }, [petitionId]);
+
+      if (state.status === 'missing_id') {
+        return html`<${ErrorView} title="Missing Petition ID" message="This page expects ?id=<uuid> in the URL." />`;
+      }
+      if (state.status === 'not_found') {
+        return html`<${ErrorView} title="Not Found" message="No petition found for this ID. It may have been removed." />`;
+      }
+      if (state.status === 'failed') {
+        return html`<${ErrorView} title="Generation Failed" message=${state.error} />`;
+      }
+      if (state.status === 'completed') {
+        return html`<${Result} petitionId=${petitionId} petition=${state.petition} />`;
+      }
+      return html`<${Loading} message="Drafting your petition…" />`;
+    }
+
+    render(html`<${App} />`, document.getElementById('app'));
+  </script>
+</body>
+</html>

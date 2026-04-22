@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writ of Mandamus Generator — Counsel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0a0a0a;
+      --bg-card:     #111111;
+      --bg-elevated: #1a1a1a;
+      --border:      #222222;
+      --border-mid:  #2e2e2e;
+      --text:        #e8e8e8;
+      --text-muted:  #555555;
+      --text-dim:    #888888;
+      --red:         #e53935;
+      --red-glow:    rgba(229,57,53,0.25);
+      --red-dim:     rgba(229,57,53,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    button { font-family: inherit; }
+    textarea, input, select { font-family: inherit; }
+    pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    import { h, render } from 'https://esm.sh/preact@10';
+    import { useState, useMemo } from 'https://esm.sh/preact@10/hooks';
+    import htm from 'https://esm.sh/htm@3';
+    const html = htm.bind(h);
+
+    // ============================================================
+    // DATA MODEL
+    // ============================================================
+    const initialData = {
+      court: { type: 'High Court', state: '', city: '', bench: '' },
+      caseInfo: { year: String(new Date().getFullYear()), jurisdictionType: 'Civil' },
+      petitioner: { name: '', age: '', relation: 'S/o', fatherName: '', occupation: '', address: '' },
+      respondents: [{ description: '', address: '' }],
+      subject: { briefSubject: '', publicDuty: '', statutoryProvision: '' },
+      facts: [{ date: '', text: '' }],
+      representation: { dateOfRepresentation: '', failureDetails: '' },
+      grounds: [''],
+      prayer: { mainPrayer: '', interimRelief: '' },
+      advocate: { name: '', enrollment: '', place: '', date: '' },
+      annexures: [''],
+    };
+
+    const STEPS = [
+      { id: 0, label: 'Court & Case', num: 'I' },
+      { id: 1, label: 'Petitioner', num: 'II' },
+      { id: 2, label: 'Respondents', num: 'III' },
+      { id: 3, label: 'Subject & Duty', num: 'IV' },
+      { id: 4, label: 'Facts', num: 'V' },
+      { id: 5, label: 'Grounds', num: 'VI' },
+      { id: 6, label: 'Prayer', num: 'VII' },
+      { id: 7, label: 'Advocate', num: 'VIII' },
+    ];
+
+    // ============================================================
+    // WRIT GENERATION ENGINE
+    // ============================================================
+    function generateWrit(d) {
+      const lines = [];
+      const centered = (s) => {
+        const width = 80;
+        return ' '.repeat(Math.max(0, Math.floor((width - s.length) / 2))) + s;
+      };
+      const right = (s) => {
+        const width = 80;
+        return ' '.repeat(Math.max(0, width - s.length)) + s;
+      };
+
+      lines.push(centered(`IN THE ${d.court.type.toUpperCase()} OF ${(d.court.state || '[STATE]').toUpperCase()} AT ${(d.court.city || '[CITY]').toUpperCase()}`));
+      if (d.court.bench) lines.push(centered(`(${d.court.bench} BENCH)`));
+      lines.push('');
+      lines.push(centered(`${d.caseInfo.jurisdictionType.toUpperCase()} WRIT JURISDICTION`));
+      lines.push('');
+      lines.push(centered(`WRIT PETITION (CIVIL) NO. __________ OF ${d.caseInfo.year}`));
+      lines.push('');
+      lines.push('');
+      lines.push('IN THE MATTER OF:');
+      lines.push('An application under Article 226 of the Constitution of India for');
+      lines.push("the issuance of a Writ of Mandamus or any other appropriate writ,");
+      lines.push('order or direction.');
+      lines.push('');
+      lines.push('AND IN THE MATTER OF:');
+      lines.push(d.subject.briefSubject || '[Brief subject of the petition]');
+      lines.push('');
+      lines.push('AND IN THE MATTER OF:');
+      lines.push('');
+
+      const petIntro =
+        `${d.petitioner.name || '[Petitioner Name]'}, ` +
+        `aged about ${d.petitioner.age || '__'} years, ` +
+        `${d.petitioner.relation} ${d.petitioner.fatherName || '[Father/Husband Name]'}, ` +
+        (d.petitioner.occupation ? `by occupation ${d.petitioner.occupation}, ` : '') +
+        `resident of ${d.petitioner.address || '[Address]'}`;
+      lines.push(petIntro);
+      lines.push(right('... PETITIONER'));
+      lines.push('');
+      lines.push(centered('V E R S U S'));
+      lines.push('');
+
+      d.respondents.forEach((r, i) => {
+        lines.push(`${i + 1}. ${r.description || '[Respondent description]'}`);
+        if (r.address) lines.push(`   ${r.address}`);
+        lines.push(right(`... RESPONDENT NO. ${i + 1}`));
+        lines.push('');
+      });
+
+      lines.push('TO,');
+      lines.push("THE HON'BLE THE CHIEF JUSTICE AND HIS/HER COMPANION JUSTICES");
+      lines.push(`OF THE ${d.court.type.toUpperCase()} OF ${(d.court.state || '[STATE]').toUpperCase()} AT ${(d.court.city || '[CITY]').toUpperCase()}.`);
+      lines.push('');
+      lines.push('THE HUMBLE PETITION OF THE PETITIONER ABOVE NAMED');
+      lines.push('');
+      lines.push('MOST RESPECTFULLY SHEWETH:');
+      lines.push('');
+
+      let n = 1;
+      lines.push(
+        `${n}. That the Petitioner is ${d.petitioner.name || '[Petitioner Name]'}, ` +
+        `aged about ${d.petitioner.age || '__'} years, ${d.petitioner.relation} ${d.petitioner.fatherName || '[Father Name]'}, ` +
+        (d.petitioner.occupation ? `by occupation ${d.petitioner.occupation}, ` : '') +
+        `resident of ${d.petitioner.address || '[Address]'}. The Petitioner is filing the present petition under Article 226 of the Constitution of India, seeking issuance of a writ of mandamus or any other appropriate writ, order, or direction compelling the Respondents to perform their statutory/public duty as set out hereinbelow.`
+      );
+      lines.push(''); n++;
+
+      d.respondents.forEach((r, i) => {
+        lines.push(`${n}. That the Respondent No. ${i + 1} is ${r.description || '[Respondent description]'}` + (r.address ? `, having its office at ${r.address}.` : '.'));
+        lines.push(''); n++;
+      });
+
+      if (d.subject.publicDuty || d.subject.statutoryProvision) {
+        lines.push(`${n}. That the Respondents are duty-bound to ${d.subject.publicDuty || '[describe the public duty]'}` + (d.subject.statutoryProvision ? ` under ${d.subject.statutoryProvision}.` : '.') + ` The said duty is public in nature and owed to persons similarly situated, including the Petitioner herein.`);
+        lines.push(''); n++;
+      }
+
+      lines.push('BRIEF FACTS OF THE CASE');
+      lines.push('');
+
+      d.facts.forEach((f) => {
+        if (!f.text) return;
+        lines.push(`${n}. ${f.date ? `That on ${f.date}, ` : 'That '}${f.text}`);
+        lines.push(''); n++;
+      });
+
+      if (d.representation.dateOfRepresentation || d.representation.failureDetails) {
+        lines.push(`${n}. That the Petitioner made due representation to the Respondents ${d.representation.dateOfRepresentation ? `on ${d.representation.dateOfRepresentation}` : 'on the dates mentioned hereinabove'}, calling upon them to discharge the aforesaid statutory/public duty. However, ${d.representation.failureDetails || '[describe the failure, inaction or refusal by the Respondents]'}`);
+        lines.push(''); n++;
+      }
+
+      lines.push(`${n}. That the inaction and/or refusal on the part of the Respondents is illegal, arbitrary, and violative of the rights of the Petitioner under the Constitution of India and the applicable statutory framework.`); lines.push(''); n++;
+      lines.push(`${n}. That the Petitioner has no other equally efficacious, alternate, or adequate remedy, save and except by way of the present writ petition under Article 226 of the Constitution of India.`); lines.push(''); n++;
+      lines.push(`${n}. That the Petitioner has not filed any other writ petition seeking similar reliefs before this Hon'ble Court or before the Hon'ble Supreme Court of India.`); lines.push(''); n++;
+      lines.push(`${n}. That the cause of action has arisen, and continues to arise, within the territorial jurisdiction of this Hon'ble Court, and this Hon'ble Court has the jurisdiction to entertain and try the present writ petition.`); lines.push(''); n++;
+
+      lines.push('G R O U N D S');
+      lines.push('');
+      lines.push('The Petitioner begs to urge the following amongst other grounds, each without prejudice to the others, in support of the present writ petition:');
+      lines.push('');
+
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach((letter, i) => {
+        if (d.grounds[i] && d.grounds[i].trim()) {
+          lines.push(`${letter}. BECAUSE ${d.grounds[i]}`);
+          lines.push('');
+        }
+      });
+
+      lines.push('P R A Y E R');
+      lines.push('');
+      lines.push(`It is, therefore, most respectfully prayed that this Hon'ble Court may be graciously pleased to:`);
+      lines.push('');
+      lines.push(`(a)  Issue a writ of mandamus, or any other appropriate writ, order, or direction in the nature of mandamus, directing the Respondents to ${d.prayer.mainPrayer || '[main relief sought]'};`);
+      lines.push('');
+
+      let pl = 'b';
+      if (d.prayer.interimRelief) {
+        lines.push(`(${pl})  Pending the hearing and final disposal of the present petition, ${d.prayer.interimRelief};`);
+        lines.push('');
+        pl = 'c';
+      }
+      lines.push(`(${pl})  Pass such other or further orders as this Hon'ble Court may deem fit and proper in the facts and circumstances of the present case.`);
+      lines.push('');
+      lines.push('AND FOR THIS ACT OF KINDNESS AND JUSTICE, THE PETITIONER, AS IN DUTY BOUND, SHALL EVER PRAY.');
+      lines.push(''); lines.push('');
+      lines.push(`PLACE: ${d.advocate.place || '____________'}`);
+      lines.push(`DATE:  ${d.advocate.date || '____________'}`);
+      lines.push(''); lines.push('');
+      lines.push(right('PETITIONER'));
+      lines.push(right(`(${d.petitioner.name || '[Petitioner Name]'})`));
+      lines.push('');
+      lines.push(right('Through'));
+      lines.push('');
+      lines.push(right(d.advocate.name || '[Advocate Name]'));
+      lines.push(right('Advocate for the Petitioner'));
+      if (d.advocate.enrollment) lines.push(right(`Enrollment No.: ${d.advocate.enrollment}`));
+      lines.push(''); lines.push('');
+      lines.push('V E R I F I C A T I O N');
+      lines.push('');
+      lines.push(`I, ${d.petitioner.name || '[Petitioner Name]'}, the Petitioner above named, do hereby verify that the contents of the above petition are true to my personal knowledge and belief, derived from records and legal advice, and believed by me to be true. Nothing material has been concealed therefrom.`);
+      lines.push('');
+      lines.push(`Verified at ${d.advocate.place || '____________'} on this ______ day of ______________, ${d.caseInfo.year}.`);
+      lines.push(''); lines.push('');
+      lines.push(right('PETITIONER'));
+      lines.push(right(`(${d.petitioner.name || '[Petitioner Name]'})`));
+
+      const validAnnexures = d.annexures.filter((a) => a.trim());
+      if (validAnnexures.length > 0) {
+        lines.push(''); lines.push('');
+        lines.push('LIST OF ANNEXURES');
+        lines.push('');
+        validAnnexures.forEach((a, i) => lines.push(`Annexure P-${i + 1}    :  ${a}`));
+      }
+
+      return lines.join('\n');
+    }
+
+    // ============================================================
+    // UI PRIMITIVES
+    // ============================================================
+    const inputStyle = {
+      width: '100%',
+      padding: '10px 14px',
+      background: '#1a1a1a',
+      border: '1px solid #333',
+      borderRadius: '8px',
+      color: '#f0f0f0',
+      fontSize: '0.9rem',
+      outline: 'none',
+      transition: 'border-color 0.2s',
+    };
+
+    function Field({ label, required, children, help }) {
+      return html`
+        <label style=${{ display: 'block', marginBottom: '16px' }}>
+          <div style=${{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase' }}>
+              ${label}${required && html`<span style=${{ color: '#e53935' }}> *</span>`}
+            </span>
+            ${help && html`<span style=${{ fontSize: '0.72rem', color: '#444' }}>${help}</span>`}
+          </div>
+          ${children}
+        </label>
+      `;
+    }
+
+    function TextInput({ value, onChange, placeholder, type = 'text' }) {
+      return html`
+        <input
+          type=${type}
+          value=${value}
+          onInput=${(e) => onChange(e.target.value)}
+          placeholder=${placeholder}
+          style=${inputStyle}
+          onFocus=${(e) => (e.target.style.borderColor = '#e53935')}
+          onBlur=${(e) => (e.target.style.borderColor = '#333')}
+        />
+      `;
+    }
+
+    function TextArea({ value, onChange, placeholder, rows = 3 }) {
+      return html`
+        <textarea
+          onInput=${(e) => onChange(e.target.value)}
+          placeholder=${placeholder}
+          rows=${rows}
+          style=${{ ...inputStyle, resize: 'vertical', lineHeight: 1.55 }}
+          onFocus=${(e) => (e.target.style.borderColor = '#e53935')}
+          onBlur=${(e) => (e.target.style.borderColor = '#333')}
+        >${value}</textarea>
+      `;
+    }
+
+    function SelectInput({ value, onChange, options }) {
+      return html`
+        <select
+          value=${value}
+          onChange=${(e) => onChange(e.target.value)}
+          style=${{ ...inputStyle, colorScheme: 'dark' }}
+          onFocus=${(e) => (e.target.style.borderColor = '#e53935')}
+          onBlur=${(e) => (e.target.style.borderColor = '#333')}
+        >
+          ${options.map((o) => html`<option key=${o.value || o} value=${o.value || o}>${o.label || o}</option>`)}
+        </select>
+      `;
+    }
+
+    function Btn({ onClick, children, variant = 'primary', disabled }) {
+      const base = {
+        display: 'inline-flex', alignItems: 'center', gap: '6px',
+        padding: '10px 20px', borderRadius: '8px',
+        fontSize: '0.875rem', fontWeight: 600, cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.4 : 1, transition: 'background 0.15s, opacity 0.15s, transform 0.1s',
+        outline: 'none', border: 'none',
+      };
+      const styles = {
+        primary:   { ...base, background: '#e53935', color: '#fff' },
+        secondary: { ...base, background: '#1a1a1a', color: '#e8e8e8', border: '1px solid #2e2e2e' },
+        ghost:     { ...base, background: 'transparent', color: '#888', border: '1px solid #222' },
+      };
+      return html`
+        <button
+          onClick=${onClick}
+          disabled=${disabled}
+          style=${styles[variant] || styles.primary}
+          onMouseEnter=${(e) => { if (!disabled) e.currentTarget.style.opacity = '0.85'; }}
+          onMouseLeave=${(e) => { if (!disabled) e.currentTarget.style.opacity = '1'; }}
+        >${children}</button>
+      `;
+    }
+
+    function SectionTitle({ roman, title, subtitle }) {
+      return html`
+        <div style=${{ marginBottom: '28px', paddingBottom: '20px', borderBottom: '1px solid #222' }}>
+          <div style=${{ fontSize: '0.68rem', fontWeight: 600, color: '#e53935', letterSpacing: '0.7px', textTransform: 'uppercase', marginBottom: '6px' }}>
+            Step ${roman}
+          </div>
+          <h2 style=${{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.3px', marginBottom: '4px' }}>
+            ${title}
+          </h2>
+          ${subtitle && html`<p style=${{ fontSize: '0.82rem', color: '#555', lineHeight: 1.5 }}>${subtitle}</p>`}
+        </div>
+      `;
+    }
+
+    function RemoveBtn({ onClick, disabled }) {
+      return html`
+        <button onClick=${onClick} disabled=${disabled} style=${{
+          background: 'transparent', border: '1px solid #2e2e2e', color: '#555',
+          fontSize: '0.75rem', padding: '5px 12px', borderRadius: '6px',
+          cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.3 : 1,
+          fontFamily: 'inherit', transition: 'border-color 0.15s, color 0.15s',
+        }}
+        onMouseEnter=${(e) => { if (!disabled) { e.currentTarget.style.borderColor = '#e53935'; e.currentTarget.style.color = '#e53935'; }}}
+        onMouseLeave=${(e) => { if (!disabled) { e.currentTarget.style.borderColor = '#2e2e2e'; e.currentTarget.style.color = '#555'; }}}
+        >Remove</button>
+      `;
+    }
+
+    function AddBtn({ onClick, label }) {
+      return html`
+        <button onClick=${onClick} style=${{
+          background: 'transparent', border: '1.5px dashed #2e2e2e', color: '#555',
+          padding: '10px 16px', fontSize: '0.8rem', fontWeight: 500,
+          cursor: 'pointer', width: '100%', marginTop: '8px', borderRadius: '8px',
+          fontFamily: 'inherit', transition: 'border-color 0.15s, color 0.15s',
+        }}
+        onMouseEnter=${(e) => { e.currentTarget.style.borderColor = '#e53935'; e.currentTarget.style.color = '#e53935'; }}
+        onMouseLeave=${(e) => { e.currentTarget.style.borderColor = '#2e2e2e'; e.currentTarget.style.color = '#555'; }}
+        >+ ${label}</button>
+      `;
+    }
+
+    // ============================================================
+    // STEP COMPONENTS
+    // ============================================================
+    function Step_Court({ data, update }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="I" title="Court & Case" subtitle="Where the petition will be filed and the case year." />
+          <div class="grid grid-cols-2 gap-4">
+            <${Field} label="Court Type" required=${true}>
+              <${SelectInput} value=${data.court.type} onChange=${(v) => update('court.type', v)} options=${['High Court', 'Supreme Court']} />
+            <//>
+            <${Field} label="Jurisdiction">
+              <${SelectInput} value=${data.caseInfo.jurisdictionType} onChange=${(v) => update('caseInfo.jurisdictionType', v)} options=${['Civil', 'Criminal']} />
+            <//>
+            <${Field} label="State" required=${true} help="e.g. Delhi, Maharashtra">
+              <${TextInput} value=${data.court.state} onChange=${(v) => update('court.state', v)} placeholder="Delhi" />
+            <//>
+            <${Field} label="City / Seat" required=${true} help="Principal seat or bench city">
+              <${TextInput} value=${data.court.city} onChange=${(v) => update('court.city', v)} placeholder="New Delhi" />
+            <//>
+            <${Field} label="Bench" help="Optional, e.g. Nagpur">
+              <${TextInput} value=${data.court.bench} onChange=${(v) => update('court.bench', v)} placeholder="Optional" />
+            <//>
+            <${Field} label="Year" required=${true}>
+              <${TextInput} value=${data.caseInfo.year} onChange=${(v) => update('caseInfo.year', v)} placeholder="2026" />
+            <//>
+          </div>
+        </div>
+      `;
+    }
+
+    function Step_Petitioner({ data, update }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="II" title="Petitioner Details" subtitle="Particulars of the person approaching the Court." />
+          <${Field} label="Full Name" required=${true}>
+            <${TextInput} value=${data.petitioner.name} onChange=${(v) => update('petitioner.name', v)} placeholder="Shri / Smt. ..." />
+          <//>
+          <div class="grid grid-cols-3 gap-4">
+            <${Field} label="Age" required=${true}>
+              <${TextInput} value=${data.petitioner.age} onChange=${(v) => update('petitioner.age', v)} placeholder="45" />
+            <//>
+            <${Field} label="Relation">
+              <${SelectInput} value=${data.petitioner.relation} onChange=${(v) => update('petitioner.relation', v)} options=${['S/o', 'D/o', 'W/o']} />
+            <//>
+            <${Field} label="Father / Husband Name" required=${true}>
+              <${TextInput} value=${data.petitioner.fatherName} onChange=${(v) => update('petitioner.fatherName', v)} placeholder="Shri ..." />
+            <//>
+          </div>
+          <${Field} label="Occupation" help="Optional">
+            <${TextInput} value=${data.petitioner.occupation} onChange=${(v) => update('petitioner.occupation', v)} placeholder="e.g. Advocate, Businessman" />
+          <//>
+          <${Field} label="Residential Address" required=${true} help="Complete postal address">
+            <${TextArea} value=${data.petitioner.address} onChange=${(v) => update('petitioner.address', v)} placeholder="House No., Street, Area, City, State, PIN" rows=${3} />
+          <//>
+        </div>
+      `;
+    }
+
+    function Step_Respondents({ data, update, updateArray }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="III" title="Respondents" subtitle="The public authorities against whom mandamus is sought." />
+          ${data.respondents.map((r, i) => html`
+            <div key=${i} style=${{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '18px', marginBottom: '12px' }}>
+              <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <span style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase' }}>Respondent No. ${i + 1}</span>
+                <${RemoveBtn} onClick=${() => updateArray('respondents', data.respondents.filter((_, idx) => idx !== i))} disabled=${data.respondents.length === 1} />
+              </div>
+              <${Field} label="Description" required=${true} help="Name of authority and designation">
+                <${TextArea} value=${r.description} onChange=${(v) => updateArray('respondents', data.respondents.map((x, idx) => idx === i ? { ...x, description: v } : x))} placeholder="Union of India, through the Secretary, Ministry of ___" rows=${2} />
+              <//>
+              <${Field} label="Address">
+                <${TextInput} value=${r.address} onChange=${(v) => updateArray('respondents', data.respondents.map((x, idx) => idx === i ? { ...x, address: v } : x))} placeholder="Office address" />
+              <//>
+            </div>
+          `)}
+          <${AddBtn} onClick=${() => updateArray('respondents', [...data.respondents, { description: '', address: '' }])} label="Add Respondent" />
+        </div>
+      `;
+    }
+
+    function Step_Subject({ data, update }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="IV" title="Subject & Public Duty" subtitle="The essence of the case and what statutory duty the respondent failed to perform." />
+          <${Field} label="Brief Subject" required=${true} help="1–3 lines">
+            <${TextArea} value=${data.subject.briefSubject} onChange=${(v) => update('subject.briefSubject', v)} placeholder="e.g. Failure of the Respondents to grant sanction for prosecution under Section ___" rows=${3} />
+          <//>
+          <${Field} label="Public / Statutory Duty" required=${true} help="What must the Respondent do?">
+            <${TextArea} value=${data.subject.publicDuty} onChange=${(v) => update('subject.publicDuty', v)} placeholder="e.g. grant / refuse sanction within the prescribed statutory timeline" rows=${3} />
+          <//>
+          <${Field} label="Statutory Provision" required=${true} help="Exact section / rule creating the duty">
+            <${TextInput} value=${data.subject.statutoryProvision} onChange=${(v) => update('subject.statutoryProvision', v)} placeholder="e.g. Section 19 of the Prevention of Corruption Act, 1988" />
+          <//>
+        </div>
+      `;
+    }
+
+    function Step_Facts({ data, update, updateArray }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="V" title="Brief Facts of the Case" subtitle="Chronological narrative. Each entry becomes a numbered paragraph." />
+          ${data.facts.map((f, i) => html`
+            <div key=${i} style=${{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '18px', marginBottom: '12px' }}>
+              <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <span style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase' }}>Fact ${i + 1}</span>
+                <${RemoveBtn} onClick=${() => updateArray('facts', data.facts.filter((_, idx) => idx !== i))} disabled=${data.facts.length === 1} />
+              </div>
+              <${Field} label="Date" help="Optional — DD.MM.YYYY">
+                <${TextInput} value=${f.date} onChange=${(v) => updateArray('facts', data.facts.map((x, idx) => idx === i ? { ...x, date: v } : x))} placeholder="DD.MM.YYYY" />
+              <//>
+              <${Field} label="Fact" required=${true}>
+                <${TextArea} value=${f.text} onChange=${(v) => updateArray('facts', data.facts.map((x, idx) => idx === i ? { ...x, text: v } : x))} placeholder="Describe what happened. 'That' is added automatically." rows=${3} />
+              <//>
+            </div>
+          `)}
+          <${AddBtn} onClick=${() => updateArray('facts', [...data.facts, { date: '', text: '' }])} label="Add Fact" />
+        </div>
+      `;
+    }
+
+    function Step_Grounds({ data, update, updateArray }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="VI" title="Representation & Grounds" subtitle="Details of the representation made, and the legal grounds on which mandamus is sought." />
+          <div style=${{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '18px', marginBottom: '24px' }}>
+            <div style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '14px' }}>Representation / Cause of Action</div>
+            <${Field} label="Date of Representation" help="Optional">
+              <${TextInput} value=${data.representation.dateOfRepresentation} onChange=${(v) => update('representation.dateOfRepresentation', v)} placeholder="DD.MM.YYYY" />
+            <//>
+            <${Field} label="Failure / Inaction by Respondents" required=${true}>
+              <${TextArea} value=${data.representation.failureDetails} onChange=${(v) => update('representation.failureDetails', v)} placeholder="e.g. despite lapse of the statutory period, the Respondents have failed to take any decision..." rows=${3} />
+            <//>
+          </div>
+          <div style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '12px' }}>Grounds (A, B, C…)</div>
+          ${data.grounds.map((g, i) => html`
+            <div key=${i} style=${{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '10px' }}>
+              <div style=${{ paddingTop: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#555', flexShrink: 0, width: '28px' }}>${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]}.</div>
+              <div style=${{ flex: 1 }}>
+                <${TextArea} value=${g} onChange=${(v) => updateArray('grounds', data.grounds.map((x, idx) => idx === i ? v : x))} placeholder='After "BECAUSE" — e.g. "the inaction of the Respondents is violative of Article 14..."' rows=${2} />
+              </div>
+              <${RemoveBtn} onClick=${() => updateArray('grounds', data.grounds.filter((_, idx) => idx !== i))} disabled=${data.grounds.length === 1} />
+            </div>
+          `)}
+          <${AddBtn} onClick=${() => updateArray('grounds', [...data.grounds, ''])} label="Add Ground" />
+        </div>
+      `;
+    }
+
+    function Step_Prayer({ data, update }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="VII" title="Prayer" subtitle="The specific directions you want the Court to issue." />
+          <${Field} label="Main Relief" required=${true} help="What should the Respondent be directed to do?">
+            <${TextArea} value=${data.prayer.mainPrayer} onChange=${(v) => update('prayer.mainPrayer', v)} placeholder="e.g. decide the representation dated ___ within eight weeks, in accordance with law" rows=${3} />
+          <//>
+          <${Field} label="Interim Relief" help="Optional — any protection pending final disposal">
+            <${TextArea} value=${data.prayer.interimRelief} onChange=${(v) => update('prayer.interimRelief', v)} placeholder="e.g. stay the operation of the impugned order / direct the Respondents not to take coercive steps..." rows=${3} />
+          <//>
+        </div>
+      `;
+    }
+
+    function Step_Advocate({ data, update, updateArray }) {
+      return html`
+        <div>
+          <${SectionTitle} roman="VIII" title="Advocate & Annexures" subtitle="Filing details and list of documents relied upon." />
+          <div class="grid grid-cols-2 gap-4">
+            <${Field} label="Advocate Name" required=${true}>
+              <${TextInput} value=${data.advocate.name} onChange=${(v) => update('advocate.name', v)} placeholder="Name of counsel" />
+            <//>
+            <${Field} label="Enrollment No." help="Bar Council number">
+              <${TextInput} value=${data.advocate.enrollment} onChange=${(v) => update('advocate.enrollment', v)} placeholder="e.g. D/1234/2015" />
+            <//>
+            <${Field} label="Place" required=${true}>
+              <${TextInput} value=${data.advocate.place} onChange=${(v) => update('advocate.place', v)} placeholder="New Delhi" />
+            <//>
+            <${Field} label="Date" required=${true}>
+              <${TextInput} value=${data.advocate.date} onChange=${(v) => update('advocate.date', v)} placeholder="DD.MM.YYYY" />
+            <//>
+          </div>
+          <div style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase', margin: '20px 0 12px' }}>Annexures</div>
+          ${data.annexures.map((a, i) => html`
+            <div key=${i} style=${{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
+              <div style=${{ fontSize: '0.8rem', fontWeight: 600, color: '#555', flexShrink: 0, width: '48px' }}>P-${i + 1}</div>
+              <div style=${{ flex: 1 }}>
+                <${TextInput} value=${a} onChange=${(v) => updateArray('annexures', data.annexures.map((x, idx) => idx === i ? v : x))} placeholder="e.g. Copy of representation dated 15.03.2024" />
+              </div>
+              <${RemoveBtn} onClick=${() => updateArray('annexures', data.annexures.filter((_, idx) => idx !== i))} disabled=${data.annexures.length === 1} />
+            </div>
+          `)}
+          <${AddBtn} onClick=${() => updateArray('annexures', [...data.annexures, ''])} label="Add Annexure" />
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // PREVIEW SCREEN
+    // ============================================================
+    function Preview({ data, onBack }) {
+      const writ = useMemo(() => generateWrit(data), [data]);
+      const [copied, setCopied] = useState(false);
+
+      const copy = () => {
+        navigator.clipboard.writeText(writ);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      const download = () => {
+        const blob = new Blob([writ], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `WP_Mandamus_${(data.petitioner.name || 'Petitioner').replace(/\s+/g, '_')}_${data.caseInfo.year}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      const printDoc = () => {
+        const w = window.open('', '_blank');
+        w.document.write(`<html><head><title>Writ of Mandamus</title><style>@page{margin:1in;size:A4}body{font-family:'Times New Roman',serif;font-size:13pt;line-height:1.8;white-space:pre-wrap;color:#000;max-width:7in;margin:0 auto}</style></head><body>${writ.replace(/</g, '&lt;')}</body></html>`);
+        w.document.close();
+        setTimeout(() => w.print(), 300);
+      };
+
+      const ghostBtn = {
+        background: 'transparent', color: '#888', border: '1px solid #2e2e2e',
+        padding: '8px 14px', borderRadius: '6px', fontSize: '0.8rem', fontWeight: 500,
+        cursor: 'pointer', fontFamily: 'inherit', transition: 'color 0.15s, border-color 0.15s',
+      };
+
+      return html`
+        <div style=${{ minHeight: '100vh', background: '#0a0a0a' }}>
+          <div style=${{ position: 'sticky', top: 0, zIndex: 10, padding: '12px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#111', borderBottom: '1px solid #222' }}>
+            <div style=${{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button onClick=${onBack} style=${ghostBtn}>← Back</button>
+              <span style=${{ color: '#888', fontSize: '0.8rem' }}>Generated Petition</span>
+            </div>
+            <div style=${{ display: 'flex', gap: '8px' }}>
+              <button onClick=${copy} style=${{ ...ghostBtn, background: copied ? '#1a2e1a' : 'transparent', color: copied ? '#4ade80' : '#888', borderColor: copied ? '#166534' : '#2e2e2e' }}>
+                ${copied ? '✓ Copied' : 'Copy'}
+              </button>
+              <button onClick=${download} style=${ghostBtn}>↓ Download</button>
+              <button onClick=${printDoc} style=${{ ...ghostBtn, background: '#e53935', color: '#fff', border: '1px solid #e53935', fontWeight: 600 }}>Print / PDF</button>
+            </div>
+          </div>
+          <div style=${{ padding: '48px 20px' }}>
+            <div style=${{ maxWidth: '820px', margin: '0 auto', background: '#111', border: '1px solid #222', borderRadius: '12px', padding: '56px 64px' }}>
+              <pre style=${{ fontSize: '13px', lineHeight: 1.7, color: '#d4d4d4', whiteSpace: 'pre-wrap', wordBreak: 'break-word', margin: 0 }}>${writ}</pre>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // MAIN APP
+    // ============================================================
+    function MandamusWritGenerator() {
+      const [step, setStep] = useState(0);
+      const [data, setData] = useState(initialData);
+      const [mode, setMode] = useState('form');
+      const [submitting, setSubmitting] = useState(false);
+      const [submitError, setSubmitError] = useState('');
+
+      const submitToServer = async () => {
+        setSubmitError('');
+        setSubmitting(true);
+        try {
+          const res = await fetch('/counsel/writ-petitions/mandamus/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok || !body.id) {
+            throw new Error(body?.errors?.body?.[0] || body?.message || `Request failed (${res.status})`);
+          }
+          window.location.href = `./result.html?id=${encodeURIComponent(body.id)}`;
+        } catch (e) {
+          setSubmitError(e.message || 'Failed to submit petition.');
+          setSubmitting(false);
+        }
+      };
+
+      const update = (path, value) => {
+        setData((prev) => {
+          const next = { ...prev };
+          const keys = path.split('.');
+          let cur = next;
+          for (let i = 0; i < keys.length - 1; i++) {
+            cur[keys[i]] = { ...cur[keys[i]] };
+            cur = cur[keys[i]];
+          }
+          cur[keys[keys.length - 1]] = value;
+          return next;
+        });
+      };
+
+      const updateArray = (key, arr) => setData((prev) => ({ ...prev, [key]: arr }));
+      const stepProps = { data, update, updateArray };
+
+      if (mode === 'preview') return html`<${Preview} data=${data} onBack=${() => setMode('form')} />`;
+
+      return html`
+        <div style=${{ minHeight: '100vh', background: '#0a0a0a' }}>
+
+          <!-- Header -->
+          <header style=${{ padding: '24px 32px', borderBottom: '1px solid #222', background: '#111' }}>
+            <div style=${{ maxWidth: '1100px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style=${{ fontSize: '0.68rem', fontWeight: 600, color: '#e53935', letterSpacing: '0.7px', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Article 226 · Constitution of India
+                </div>
+                <h1 style=${{ fontSize: '1.4rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.3px' }}>
+                  Writ of Mandamus
+                  <span style=${{ fontWeight: 400, color: '#555', fontSize: '1rem', marginLeft: '10px' }}>Petition Generator</span>
+                </h1>
+              </div>
+              <div style=${{ fontSize: '0.78rem', color: '#444', maxWidth: '280px', textAlign: 'right', lineHeight: 1.5, fontStyle: 'italic' }}>
+                "We command" — a writ compelling a public authority to perform a duty cast upon it by law.
+              </div>
+            </div>
+          </header>
+
+          <!-- Body -->
+          <div style=${{ maxWidth: '1100px', margin: '0 auto', padding: '32px', display: 'grid', gridTemplateColumns: '200px 1fr', gap: '24px' }}>
+
+            <!-- Stepper -->
+            <aside>
+              <div style=${{ fontSize: '0.68rem', fontWeight: 600, color: '#444', letterSpacing: '0.6px', textTransform: 'uppercase', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #222' }}>
+                Steps
+              </div>
+              <nav style=${{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                ${STEPS.map((s, i) => {
+                  const isActive = i === step;
+                  const isDone = i < step;
+                  return html`
+                    <button key=${s.id} onClick=${() => setStep(i)} style=${{
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                      padding: '9px 12px', borderRadius: '8px', width: '100%', textAlign: 'left',
+                      background: isActive ? '#1a1a1a' : 'transparent',
+                      color: isActive ? '#fff' : isDone ? '#888' : '#555',
+                      fontWeight: isActive ? 600 : 400, fontSize: '0.875rem',
+                      cursor: 'pointer', border: 'none', outline: 'none',
+                      borderLeft: (isActive || isDone) ? '2px solid #e53935' : '2px solid transparent',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}>
+                      <span style=${{ fontSize: '0.72rem', color: (isActive || isDone) ? '#e53935' : '#333', minWidth: '18px', fontWeight: 700 }}>${s.num}.</span>
+                      ${s.label}
+                      ${isDone && !isActive && html`<span style=${{ marginLeft: 'auto', color: '#e53935', fontSize: '0.75rem' }}>✓</span>`}
+                    </button>
+                  `;
+                })}
+              </nav>
+              <div style=${{ marginTop: '20px', padding: '12px', background: '#111', border: '1px solid #222', borderRadius: '8px', fontSize: '0.75rem', color: '#444', lineHeight: 1.55 }}>
+                Click any step to jump. Progress is preserved across steps.
+              </div>
+            </aside>
+
+            <!-- Form panel -->
+            <main style=${{ background: '#111', border: '1px solid #222', borderRadius: '12px', padding: '40px 48px', minHeight: '560px' }}>
+              ${step === 0 && html`<${Step_Court} ...${stepProps} />`}
+              ${step === 1 && html`<${Step_Petitioner} ...${stepProps} />`}
+              ${step === 2 && html`<${Step_Respondents} ...${stepProps} />`}
+              ${step === 3 && html`<${Step_Subject} ...${stepProps} />`}
+              ${step === 4 && html`<${Step_Facts} ...${stepProps} />`}
+              ${step === 5 && html`<${Step_Grounds} ...${stepProps} />`}
+              ${step === 6 && html`<${Step_Prayer} ...${stepProps} />`}
+              ${step === 7 && html`<${Step_Advocate} ...${stepProps} />`}
+
+              <!-- Nav -->
+              <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '40px', paddingTop: '20px', borderTop: '1px solid #222' }}>
+                <${Btn} variant="secondary" onClick=${() => setStep(Math.max(0, step - 1))} disabled=${step === 0}>← Previous<//>
+                <span style=${{ fontSize: '0.75rem', color: '#444' }}>Step ${step + 1} of ${STEPS.length}</span>
+                ${step < STEPS.length - 1
+                  ? html`<${Btn} onClick=${() => setStep(step + 1)}>Next →<//>`
+                  : html`<${Btn} onClick=${submitToServer} disabled=${submitting}>
+                      ${submitting ? 'Submitting…' : 'Generate Petition ⚖'}
+                    <//>`
+                }
+              </div>
+              ${submitError && html`
+                <div style=${{ marginTop: '12px', padding: '10px 14px', background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.4)', borderRadius: '6px', color: '#e53935', fontSize: '0.85rem' }}>
+                  ${submitError}
+                </div>
+              `}
+            </main>
+          </div>
+
+          <footer style=${{ textAlign: 'center', padding: '24px', fontSize: '0.75rem', color: '#333', borderTop: '1px solid #1a1a1a' }}>
+            Generated petitions are drafts for counsel. Final form, court fee, and accompanying affidavits must be reviewed before filing.
+          </footer>
+        </div>
+      `;
+    }
+
+    render(html`<${MandamusWritGenerator} />`, document.getElementById('app'));
+  </script>
+</body>
+</html>
