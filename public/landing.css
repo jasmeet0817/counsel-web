@@ -84,6 +84,9 @@ a {
 }
 
 .site-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--text-muted);
   transition: color 0.15s;
 }
