@@ -3,181 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Counsel</title>
-  <link rel="icon" href="favicon.svg" type="image/jpeg">
-  <link rel="stylesheet" href="style.css">
+  <title>Counsel — AI Legal Assistant for Lawyers</title>
+  <meta name="description" content="Counsel is the AI legal assistant that helps lawyers level up their practice with AI agents that work for them.">
+  <link rel="icon" href="favicon.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="landing.css">
 </head>
 <body>
 
-  <!-- Hamburger button (mobile only) -->
-  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
+  <header class="site-header">
+    <a class="brand" href="/">
+      <img src="favicon.jpg" alt="" class="brand-logo">
+      <span class="brand-name">Counsel</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#team">Team</a>
+      <a class="nav-cta" href="/app.html">Open App</a>
+    </nav>
+  </header>
 
-  <!-- Mobile backdrop -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <main>
 
-  <!-- Left sidebar -->
-  <nav class="sidebar" id="sidebar" aria-label="Main navigation">
-    <div class="sidebar-logo">Counsel</div>
-    <ul class="sidebar-nav">
-      <li>
-        <a href="#recorder" class="nav-link active" data-page="recorder">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="23"/>
-            <line x1="8" y1="23" x2="16" y2="23"/>
-          </svg>
-          Recorder
+    <!-- Hero ─────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-eyebrow">AI Legal Assistant</div>
+      <h1 class="hero-title">
+        Level up your legal practice with<br>
+        <span class="accent">AI agents that work for you</span>
+      </h1>
+      <p class="hero-sub">
+        Counsel is the AI legal assistant built for lawyers. Put a team of
+        specialized agents behind every matter — summarizing meetings, drafting
+        memos, and surfacing the next move, so you can focus on the law.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="/app.html">
+          Get Started
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-      </li>
-      <li>
-        <a href="#history" class="nav-link" data-page="history">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-          History
-        </a>
-      </li>
-      <li>
-        <a href="#upload" class="nav-link" data-page="upload">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          Upload Recording
-        </a>
-      </li>
-    </ul>
-  </nav>
+        <a class="btn btn-ghost" href="#features">See what it does</a>
+      </div>
+    </section>
 
-  <!-- Main content area -->
-  <div class="app-main" id="appMain">
+    <!-- Features ─────────────────────────────────────── -->
+    <section class="features" id="features">
+      <div class="section-head">
+        <div class="section-eyebrow">Features</div>
+        <h2 class="section-title">A team of agents, on every matter</h2>
+      </div>
 
-    <!-- Recorder page (existing content, id added) -->
-    <div class="container" id="recorderPage">
-      <header>
-        <h1>Counsel</h1>
-        <p class="subtitle">Zoom Call Recorder</p>
-      </header>
-
-      <section class="recorder-section">
-        <div class="company-inputs">
-          <div class="company-input-row">
-            <input type="text" id="companyName" placeholder="Company name" autocomplete="off" spellcheck="false">
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
           </div>
-          <div class="company-input-row">
-            <input type="url" id="companyUrl" placeholder="Company URL (optional)" autocomplete="off" spellcheck="false">
-            <p class="input-hint">Any URL with company info — website, LinkedIn, etc.</p>
+          <h3>Meeting Summary</h3>
+          <p>Record client calls and depositions. Counsel produces clean, structured summaries you can drop straight into your matter file.</p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+            </svg>
           </div>
-        </div>
+          <h3>Next-Step Identification</h3>
+          <p>Every conversation ends with a list of owed actions, open questions, and deadlines — so nothing slips between calls.</p>
+        </article>
 
-        <div class="waves-container" id="wavesContainer">
-          <div class="wave wave-1"></div>
-          <div class="wave wave-2"></div>
-          <div class="wave wave-3"></div>
-          <button class="record-btn" id="recordBtn" aria-label="Start recording">
-            <div class="record-icon" id="recordIcon"></div>
-          </button>
-        </div>
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="8" y1="13" x2="16" y2="13"/>
+              <line x1="8" y1="17" x2="16" y2="17"/>
+              <line x1="8" y1="9" x2="10" y2="9"/>
+            </svg>
+          </div>
+          <h3>Memorandum Drafting</h3>
+          <p>Turn notes and research into first-draft memos in your voice. Edit the last mile instead of the blank page.</p>
+        </article>
 
-        <p class="status" id="status">Click to start recording</p>
-        <div class="timer" id="timer">00:00</div>
-      </section>
-
-      <section class="visualizer-section">
-        <canvas id="waveformCanvas"></canvas>
-        <div class="channel-labels" id="channelLabels">
-          <span class="label-mic">Microphone</span>
-          <span class="label-sys">Meeting Audio</span>
-        </div>
-      </section>
-
-      <section class="download-section" id="downloadSection">
-        <div class="recording-meta" id="recordingMeta"></div>
-        <button class="download-btn" id="downloadBtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Download Recording
-        </button>
-      </section>
-    </div>
-
-    <!-- History page -->
-    <div class="history-page page-hidden" id="historyPage">
-      <div class="page-header">
-        <h2>Recording History</h2>
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3>Case Research</h3>
+          <p>Ask in plain English. Counsel pulls relevant precedents, statutes, and commentary, with citations you can verify.</p>
+        </article>
       </div>
-      <div id="historyContent"></div>
-    </div>
+    </section>
 
-    <!-- Upload page -->
-    <div class="upload-page page-hidden" id="uploadPage">
-      <div class="page-header">
-        <h2>Upload Recording</h2>
-        <p class="page-subtitle">Submit a past meeting recording for processing</p>
+    <!-- Who we are ───────────────────────────────────── -->
+    <section class="team" id="team">
+      <div class="section-head">
+        <div class="section-eyebrow">Who we are</div>
+        <h2 class="section-title">Built by engineers and lawyers</h2>
       </div>
 
-      <div class="company-inputs">
-        <div class="company-input-row">
-          <input type="text" id="uploadCompanyName" placeholder="Company name" autocomplete="off" spellcheck="false">
-        </div>
-        <div class="company-input-row">
-          <input type="url" id="uploadCompanyUrl" placeholder="Company URL (optional)" autocomplete="off" spellcheck="false">
-          <p class="input-hint">Any URL with company info — website, LinkedIn, etc.</p>
-        </div>
-        <div class="company-input-row">
-          <input type="date" id="uploadMeetingDate">
-          
-          <p class="input-hint"><span class="optional-label">Optional</span>. Date the meeting took place</p>
-        </div>
+      <div class="team-grid">
+        <article class="team-card">
+          <img class="avatar" src="images/jasmeet.png" alt="Jasmeet Singh">
+          <h3>Jasmeet Singh</h3>
+          <p class="team-role">Co-founder · Engineering</p>
+          <p class="team-bio">11 years of engineering experience at Google, building products used by hundreds of millions of people.</p>
+        </article>
+
+        <article class="team-card">
+          <img class="avatar" src="images/yash.png" alt="Naveen">
+          <h3>Naveen Baisoya</h3>
+          <p class="team-role">Co-founder · Legal</p>
+          <p class="team-bio">13 years as a corporate lawyer. Founder @ Own law firm, with deep experience across transactional and advisory work.</p>
+        </article>
       </div>
+    </section>
 
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="uploadFile" accept="audio/*,video/*" hidden>
-        <label for="uploadFile" class="upload-zone-label">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/>
-            <line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          <span id="uploadFileLabel">Choose or drag an audio / video file</span>
-        </label>
-      </div>
-
-      <p class="upload-status" id="uploadStatus"></p>
-
-      <a class="upload-meeting-link" id="uploadMeetingLink" hidden>
-        Go to Meeting
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <!-- CTA strip ────────────────────────────────────── -->
+    <section class="cta-strip">
+      <h2>Ready to level up your practice?</h2>
+      <p>Start recording a matter in under a minute.</p>
+      <a class="btn btn-primary" href="/app.html">
+        Open the App
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
+    </section>
 
-      <button class="upload-submit-btn" id="uploadSubmitBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
-        Submit Recording
-      </button>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="favicon.jpg" alt="" class="brand-logo">
+        <span>Counsel</span>
+      </div>
+      <div class="footer-meta">
+        <span>&copy; 2026 Counsel</span>
+        <span class="dot">·</span>
+        <a href="mailto:contact@ai-counsel.com">contact@ai-counsel.com</a>
+      </div>
     </div>
+  </footer>
 
-  </div>
-
-  <dialog id="errorDialog">
-    <p>Company name is required before recording.</p>
-    <button id="errorDialogClose">OK</button>
-  </dialog>
-
-  <script src="recorder.js"></script>
-  <script src="history.js"></script>
-  <script src="upload.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>

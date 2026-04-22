@@ -12,7 +12,18 @@ app.use(createProxyMiddleware({
   changeOrigin: true,
 }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.get('/*.html', (req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.sendFile(path.join(__dirname, 'public', req.path));
+});
+
+app.use(express.static(path.join(__dirname, 'public'), {
+  etag: true,
+  lastModified: true,
+  setHeaders: (res) => {
+    res.set('Cache-Control', 'no-cache');
+  }
+}));
 
 http.createServer(app).listen(PORT, () => {
   console.log(`Counsel Web running at http://localhost:${PORT}`);

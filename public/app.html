@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Counsel</title>
+  <link rel="icon" href="favicon.svg" type="image/jpeg">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body.locked > :not(#partnerGate) { visibility: hidden; }
+    #partnerGate {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+    #partnerGate.hidden { display: none; }
+    .partner-gate-card {
+      width: 100%;
+      max-width: 360px;
+      background: #0f0f0f;
+      border: 1px solid #222;
+      border-radius: 14px;
+      padding: 36px 32px 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .partner-gate-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.2px;
+      text-align: center;
+    }
+    .partner-gate-subtitle {
+      font-size: 0.82rem;
+      color: #777;
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+    }
+    #partnerGateForm {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #partnerGateInput {
+      width: 100%;
+      padding: 12px 14px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    #partnerGateInput:focus { border-color: #e53935; }
+    #partnerGateInput.error {
+      border-color: #e53935;
+      animation: partnerShake 0.32s ease;
+    }
+    @keyframes partnerShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    #partnerGateSubmit {
+      padding: 11px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    #partnerGateSubmit:hover { opacity: 0.88; }
+    .partner-gate-error {
+      font-size: 0.78rem;
+      color: #e53935;
+      text-align: center;
+      min-height: 1em;
+    }
+    .back-btn {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      color: #f0f0f0;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .back-btn:hover { background: rgba(255, 255, 255, 0.08); }
+  </style>
+</head>
+<body class="locked">
+
+  <div id="partnerGate">
+    <a href="index.html" class="back-btn" aria-label="Back to home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </a>
+    <div class="partner-gate-card">
+      <div>
+        <div class="partner-gate-title">Counsel</div>
+        <div class="partner-gate-subtitle">ENTER PARTNER CODE</div>
+      </div>
+      <form id="partnerGateForm" autocomplete="off">
+        <input
+          type="password"
+          id="partnerGateInput"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          spellcheck="false"
+          autofocus>
+        <div class="partner-gate-error" id="partnerGateError"></div>
+        <button type="submit" id="partnerGateSubmit">Enter</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var STORED_HASH = 'e15e2cf3d92ceeec3117dab9d27eb72a4ce1640064c44cb8d0f2cccd56ea9405';
+      var SESSION_KEY = 'partnerAuthed';
+
+      function unlock() {
+        document.body.classList.remove('locked');
+        var gate = document.getElementById('partnerGate');
+        if (gate) gate.classList.add('hidden');
+      }
+
+      if (sessionStorage.getItem(SESSION_KEY) === STORED_HASH) {
+        unlock();
+        return;
+      }
+
+      async function sha256(text) {
+        var buf = new TextEncoder().encode(text);
+        var hash = await crypto.subtle.digest('SHA-256', buf);
+        return Array.from(new Uint8Array(hash))
+          .map(function (b) { return b.toString(16).padStart(2, '0'); })
+          .join('');
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('partnerGateForm');
+        var input = document.getElementById('partnerGateInput');
+        var errorEl = document.getElementById('partnerGateError');
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          errorEl.textContent = '';
+          var value = input.value || '';
+          if (!value) return;
+          var hash = await sha256(value);
+          if (hash === STORED_HASH) {
+            sessionStorage.setItem(SESSION_KEY, hash);
+            unlock();
+          } else {
+            input.classList.add('error');
+            errorEl.textContent = 'Incorrect code';
+            input.value = '';
+            setTimeout(function () { input.classList.remove('error'); }, 400);
+            input.focus();
+          }
+        });
+      });
+    })();
+  </script>
+
+  <!-- Hamburger button (mobile only) -->
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Mobile backdrop -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Left sidebar -->
+  <nav class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar-logo">Counsel</div>
+    <ul class="sidebar-nav">
+      <li>
+        <a href="#recorder" class="nav-link active" data-page="recorder">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          Recorder
+        </a>
+      </li>
+      <li>
+        <a href="#history" class="nav-link" data-page="history">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          History
+        </a>
+      </li>
+      <li>
+        <a href="#upload" class="nav-link" data-page="upload">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload Recording
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main content area -->
+  <div class="app-main" id="appMain">
+
+    <!-- Recorder page (existing content, id added) -->
+    <div class="container" id="recorderPage">
+      <header>
+        <h1>Counsel</h1>
+        <p class="subtitle">Zoom Call Recorder</p>
+      </header>
+
+      <section class="recorder-section">
+        <div class="company-inputs">
+          <div class="company-input-row">
+            <input type="text" id="companyName" placeholder="Company name" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="company-input-row">
+            <input type="url" id="companyUrl" placeholder="Company URL (optional)" autocomplete="off" spellcheck="false">
+            <p class="input-hint">Any URL with company info — website, LinkedIn, etc.</p>
+          </div>
+        </div>
+
+        <div class="waves-container" id="wavesContainer">
+          <div class="wave wave-1"></div>
+          <div class="wave wave-2"></div>
+          <div class="wave wave-3"></div>
+          <button class="record-btn" id="recordBtn" aria-label="Start recording">
+            <div class="record-icon" id="recordIcon"></div>
+          </button>
+        </div>
+
+        <p class="status" id="status">Click to start recording</p>
+        <div class="timer" id="timer">00:00</div>
+      </section>
+
+      <section class="visualizer-section">
+        <canvas id="waveformCanvas"></canvas>
+        <div class="channel-labels" id="channelLabels">
+          <span class="label-mic">Microphone</span>
+          <span class="label-sys">Meeting Audio</span>
+        </div>
+      </section>
+
+      <section class="download-section" id="downloadSection">
+        <div class="recording-meta" id="recordingMeta"></div>
+        <button class="download-btn" id="downloadBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Download Recording
+        </button>
+      </section>
+    </div>
+
+    <!-- History page -->
+    <div class="history-page page-hidden" id="historyPage">
+      <div class="page-header">
+        <h2>Recording History</h2>
+      </div>
+      <div id="historyContent"></div>
+    </div>
+
+    <!-- Upload page -->
+    <div class="upload-page page-hidden" id="uploadPage">
+      <div class="page-header">
+        <h2>Upload Recording</h2>
+        <p class="page-subtitle">Submit a past meeting recording for processing</p>
+      </div>
+
+      <div class="company-inputs">
+        <div class="company-input-row">
+          <input type="text" id="uploadCompanyName" placeholder="Company name" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="company-input-row">
+          <input type="url" id="uploadCompanyUrl" placeholder="Company URL (optional)" autocomplete="off" spellcheck="false">
+          <p class="input-hint">Any URL with company info — website, LinkedIn, etc.</p>
+        </div>
+        <div class="company-input-row">
+          <input type="date" id="uploadMeetingDate">
+          
+          <p class="input-hint"><span class="optional-label">Optional</span>. Date the meeting took place</p>
+        </div>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="uploadFile" accept="audio/*,video/*" hidden>
+        <label for="uploadFile" class="upload-zone-label">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <span id="uploadFileLabel">Choose or drag an audio / video file</span>
+        </label>
+      </div>
+
+      <p class="upload-status" id="uploadStatus"></p>
+
+      <a class="upload-meeting-link" id="uploadMeetingLink" hidden>
+        Go to Meeting
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <button class="upload-submit-btn" id="uploadSubmitBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Submit Recording
+      </button>
+    </div>
+
+  </div>
+
+  <dialog id="errorDialog">
+    <p>Company name is required before recording.</p>
+    <button id="errorDialogClose">OK</button>
+  </dialog>
+
+  <script src="recorder.js"></script>
+  <script src="history.js"></script>
+  <script src="upload.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
