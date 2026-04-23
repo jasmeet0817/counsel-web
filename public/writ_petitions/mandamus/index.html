@@ -30,6 +30,7 @@
     * { box-sizing: border-box; }
     button { font-family: inherit; }
     textarea, input, select { font-family: inherit; }
+    input::placeholder, textarea::placeholder { color: #424141 !important; opacity: 1 !important; }
     pre { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
   </style>
 </head>
@@ -424,7 +425,7 @@
       `;
     }
 
-    function Step_Respondents({ data, update, updateArray }) {
+    function Step_Respondents({ data, update }) {
       return html`
         <div>
           <${SectionTitle} roman="III" title="Respondents" subtitle="The public authorities against whom mandamus is sought." />
@@ -432,17 +433,17 @@
             <div key=${i} style=${{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '18px', marginBottom: '12px' }}>
               <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <span style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase' }}>Respondent No. ${i + 1}</span>
-                <${RemoveBtn} onClick=${() => updateArray('respondents', data.respondents.filter((_, idx) => idx !== i))} disabled=${data.respondents.length === 1} />
+                <${RemoveBtn} onClick=${() => update('respondents', data.respondents.filter((_, idx) => idx !== i))} disabled=${data.respondents.length === 1} />
               </div>
               <${Field} label="Description" required=${true} help="Name of authority and designation">
-                <${TextArea} value=${r.description} onChange=${(v) => updateArray('respondents', data.respondents.map((x, idx) => idx === i ? { ...x, description: v } : x))} placeholder="Union of India, through the Secretary, Ministry of ___" rows=${2} />
+                <${TextArea} value=${r.description} onChange=${(v) => update(`respondents.${i}.description`, v)} placeholder="Union of India, through the Secretary, Ministry of ___" rows=${2} />
               <//>
               <${Field} label="Address">
-                <${TextInput} value=${r.address} onChange=${(v) => updateArray('respondents', data.respondents.map((x, idx) => idx === i ? { ...x, address: v } : x))} placeholder="Office address" />
+                <${TextInput} value=${r.address} onChange=${(v) => update(`respondents.${i}.address`, v)} placeholder="Office address" />
               <//>
             </div>
           `)}
-          <${AddBtn} onClick=${() => updateArray('respondents', [...data.respondents, { description: '', address: '' }])} label="Add Respondent" />
+          <${AddBtn} onClick=${() => update('respondents', [...data.respondents, { description: '', address: '' }])} label="Add Respondent" />
         </div>
       `;
     }
@@ -464,7 +465,7 @@
       `;
     }
 
-    function Step_Facts({ data, update, updateArray }) {
+    function Step_Facts({ data, update }) {
       return html`
         <div>
           <${SectionTitle} roman="V" title="Brief Facts of the Case" subtitle="Chronological narrative. Each entry becomes a numbered paragraph." />
@@ -472,22 +473,22 @@
             <div key=${i} style=${{ background: '#111', border: '1px solid #222', borderRadius: '10px', padding: '18px', marginBottom: '12px' }}>
               <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <span style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase' }}>Fact ${i + 1}</span>
-                <${RemoveBtn} onClick=${() => updateArray('facts', data.facts.filter((_, idx) => idx !== i))} disabled=${data.facts.length === 1} />
+                <${RemoveBtn} onClick=${() => update('facts', data.facts.filter((_, idx) => idx !== i))} disabled=${data.facts.length === 1} />
               </div>
               <${Field} label="Date" help="Optional — DD.MM.YYYY">
-                <${TextInput} value=${f.date} onChange=${(v) => updateArray('facts', data.facts.map((x, idx) => idx === i ? { ...x, date: v } : x))} placeholder="DD.MM.YYYY" />
+                <${TextInput} value=${f.date} onChange=${(v) => update(`facts.${i}.date`, v)} placeholder="DD.MM.YYYY" />
               <//>
               <${Field} label="Fact" required=${true}>
-                <${TextArea} value=${f.text} onChange=${(v) => updateArray('facts', data.facts.map((x, idx) => idx === i ? { ...x, text: v } : x))} placeholder="Describe what happened. 'That' is added automatically." rows=${3} />
+                <${TextArea} value=${f.text} onChange=${(v) => update(`facts.${i}.text`, v)} placeholder="Describe what happened. 'That' is added automatically." rows=${3} />
               <//>
             </div>
           `)}
-          <${AddBtn} onClick=${() => updateArray('facts', [...data.facts, { date: '', text: '' }])} label="Add Fact" />
+          <${AddBtn} onClick=${() => update('facts', [...data.facts, { date: '', text: '' }])} label="Add Fact" />
         </div>
       `;
     }
 
-    function Step_Grounds({ data, update, updateArray }) {
+    function Step_Grounds({ data, update }) {
       return html`
         <div>
           <${SectionTitle} roman="VI" title="Representation & Grounds" subtitle="Details of the representation made, and the legal grounds on which mandamus is sought." />
@@ -505,12 +506,12 @@
             <div key=${i} style=${{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '10px' }}>
               <div style=${{ paddingTop: '10px', fontSize: '0.9rem', fontWeight: 700, color: '#555', flexShrink: 0, width: '28px' }}>${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[i]}.</div>
               <div style=${{ flex: 1 }}>
-                <${TextArea} value=${g} onChange=${(v) => updateArray('grounds', data.grounds.map((x, idx) => idx === i ? v : x))} placeholder='After "BECAUSE" — e.g. "the inaction of the Respondents is violative of Article 14..."' rows=${2} />
+                <${TextArea} value=${g} onChange=${(v) => update(`grounds.${i}`, v)} placeholder='After "BECAUSE" — e.g. "the inaction of the Respondents is violative of Article 14..."' rows=${2} />
               </div>
-              <${RemoveBtn} onClick=${() => updateArray('grounds', data.grounds.filter((_, idx) => idx !== i))} disabled=${data.grounds.length === 1} />
+              <${RemoveBtn} onClick=${() => update('grounds', data.grounds.filter((_, idx) => idx !== i))} disabled=${data.grounds.length === 1} />
             </div>
           `)}
-          <${AddBtn} onClick=${() => updateArray('grounds', [...data.grounds, ''])} label="Add Ground" />
+          <${AddBtn} onClick=${() => update('grounds', [...data.grounds, ''])} label="Add Ground" />
         </div>
       `;
     }
@@ -529,7 +530,7 @@
       `;
     }
 
-    function Step_Advocate({ data, update, updateArray }) {
+    function Step_Advocate({ data, update }) {
       return html`
         <div>
           <${SectionTitle} roman="VIII" title="Advocate & Annexures" subtitle="Filing details and list of documents relied upon." />
@@ -552,12 +553,12 @@
             <div key=${i} style=${{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
               <div style=${{ fontSize: '0.8rem', fontWeight: 600, color: '#555', flexShrink: 0, width: '48px' }}>P-${i + 1}</div>
               <div style=${{ flex: 1 }}>
-                <${TextInput} value=${a} onChange=${(v) => updateArray('annexures', data.annexures.map((x, idx) => idx === i ? v : x))} placeholder="e.g. Copy of representation dated 15.03.2024" />
+                <${TextInput} value=${a} onChange=${(v) => update(`annexures.${i}`, v)} placeholder="e.g. Copy of representation dated 15.03.2024" />
               </div>
-              <${RemoveBtn} onClick=${() => updateArray('annexures', data.annexures.filter((_, idx) => idx !== i))} disabled=${data.annexures.length === 1} />
+              <${RemoveBtn} onClick=${() => update('annexures', data.annexures.filter((_, idx) => idx !== i))} disabled=${data.annexures.length === 1} />
             </div>
           `)}
-          <${AddBtn} onClick=${() => updateArray('annexures', [...data.annexures, ''])} label="Add Annexure" />
+          <${AddBtn} onClick=${() => update('annexures', [...data.annexures, ''])} label="Add Annexure" />
         </div>
       `;
     }
@@ -567,31 +568,37 @@
     // ============================================================
     function getMissingFields(d) {
       const missing = [];
-      if (!d.court.state.trim())             missing.push('Court: State');
-      if (!d.court.city.trim())              missing.push('Court: City / Seat');
-      if (!d.caseInfo.year.trim())           missing.push('Case: Year');
-      if (!d.petitioner.name.trim())         missing.push('Petitioner: Full Name');
-      if (!d.petitioner.age.trim())          missing.push('Petitioner: Age');
-      if (!d.petitioner.fatherName.trim())   missing.push('Petitioner: Father / Husband Name');
-      if (!d.petitioner.address.trim())      missing.push('Petitioner: Residential Address');
+      const add = (cond, meta) => { if (cond) missing.push(meta); };
+
+      add(!d.court.state.trim(),           { label: 'Court: State',                   path: 'court.state',                  type: 'text',     placeholder: 'Delhi' });
+      add(!d.court.city.trim(),            { label: 'Court: City / Seat',             path: 'court.city',                   type: 'text',     placeholder: 'New Delhi' });
+      add(!d.caseInfo.year.trim(),         { label: 'Case: Year',                     path: 'caseInfo.year',                type: 'text',     placeholder: '2026' });
+      add(!d.petitioner.name.trim(),       { label: 'Petitioner: Full Name',          path: 'petitioner.name',              type: 'text',     placeholder: 'Shri / Smt. ...' });
+      add(!d.petitioner.age.trim(),        { label: 'Petitioner: Age',                path: 'petitioner.age',               type: 'text',     placeholder: '45' });
+      add(!d.petitioner.fatherName.trim(), { label: 'Petitioner: Father / Husband Name', path: 'petitioner.fatherName',     type: 'text',     placeholder: 'Shri ...' });
+      add(!d.petitioner.address.trim(),    { label: 'Petitioner: Residential Address', path: 'petitioner.address',          type: 'textarea', placeholder: 'House No., Street, Area, City, State, PIN' });
       d.respondents.forEach((r, i) => {
-        if (!r.description.trim()) missing.push(`Respondent ${i + 1}: Description`);
+        add(!r.description.trim(), { label: `Respondent ${i + 1}: Description`, path: `respondents.${i}.description`, type: 'textarea', placeholder: 'Union of India, through the Secretary, Ministry of ___' });
       });
-      if (!d.subject.briefSubject.trim())       missing.push('Subject: Brief Subject');
-      if (!d.subject.publicDuty.trim())         missing.push('Subject: Public / Statutory Duty');
-      if (!d.subject.statutoryProvision.trim()) missing.push('Subject: Statutory Provision');
+      add(!d.subject.briefSubject.trim(),       { label: 'Subject: Brief Subject',          path: 'subject.briefSubject',       type: 'textarea', placeholder: 'e.g. Failure of the Respondents to grant sanction...' });
+      add(!d.subject.publicDuty.trim(),         { label: 'Subject: Public / Statutory Duty', path: 'subject.publicDuty',        type: 'textarea', placeholder: 'e.g. grant / refuse sanction within the prescribed statutory timeline' });
+      add(!d.subject.statutoryProvision.trim(), { label: 'Subject: Statutory Provision',    path: 'subject.statutoryProvision', type: 'text',     placeholder: 'e.g. Section 19 of the Prevention of Corruption Act, 1988' });
       d.facts.forEach((f, i) => {
-        if (!f.text.trim()) missing.push(`Fact ${i + 1}: Fact`);
+        add(!f.text.trim(), { label: `Fact ${i + 1}: Fact`, path: `facts.${i}.text`, type: 'textarea', placeholder: "Describe what happened. 'That' is added automatically." });
       });
-      if (!d.representation.failureDetails.trim()) missing.push('Grounds: Failure / Inaction by Respondents');
-      if (!d.prayer.mainPrayer.trim())       missing.push('Prayer: Main Relief');
-      if (!d.advocate.name.trim())           missing.push('Advocate: Name');
-      if (!d.advocate.place.trim())          missing.push('Advocate: Place');
-      if (!d.advocate.date.trim())           missing.push('Advocate: Date');
+      add(!d.representation.failureDetails.trim(), { label: 'Grounds: Failure / Inaction by Respondents', path: 'representation.failureDetails', type: 'textarea', placeholder: 'e.g. despite lapse of the statutory period, the Respondents have failed...' });
+      add(!d.prayer.mainPrayer.trim(), { label: 'Prayer: Main Relief',  path: 'prayer.mainPrayer', type: 'textarea', placeholder: 'e.g. decide the representation dated ___ within eight weeks, in accordance with law' });
+      add(!d.advocate.name.trim(),     { label: 'Advocate: Name',       path: 'advocate.name',     type: 'text',     placeholder: 'Name of counsel' });
+      add(!d.advocate.place.trim(),    { label: 'Advocate: Place',      path: 'advocate.place',    type: 'text',     placeholder: 'New Delhi' });
+      add(!d.advocate.date.trim(),     { label: 'Advocate: Date',       path: 'advocate.date',     type: 'text',     placeholder: 'DD.MM.YYYY' });
       return missing;
     }
 
-    function ValidationModal({ fields, onClose }) {
+    function ValidationModal({ data, update, onClose, onSubmit, submitting, submitError }) {
+      const missing = getMissingFields(data);
+      const allFilled = missing.length === 0;
+      const getValue = (path) => path.split('.').reduce((o, k) => o[k], data);
+
       return html`
         <div
           onClick=${onClose}
@@ -606,14 +613,15 @@
             onClick=${(e) => e.stopPropagation()}
             style=${{
               background: '#0a0a0a', border: '1px solid #333',
-              borderRadius: '12px', padding: '32px 36px',
-              maxWidth: '480px', width: '100%',
+              borderRadius: '12px', padding: '28px 32px',
+              maxWidth: '560px', width: '100%',
+              maxHeight: '85vh', overflowY: 'auto',
               boxShadow: '0 24px 48px rgba(0,0,0,0.8)',
             }}
           >
-            <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <h2 style=${{ fontSize: '1rem', fontWeight: 700, color: '#e53935', letterSpacing: '-0.2px' }}>
-                Required fields are empty
+            <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h2 style=${{ fontSize: '1rem', fontWeight: 700, color: allFilled ? '#4ade80' : '#e53935', letterSpacing: '-0.2px' }}>
+                ${allFilled ? 'All required fields complete' : 'Fill in missing fields'}
               </h2>
               <button
                 onClick=${onClose}
@@ -623,23 +631,29 @@
                 }}
               >×</button>
             </div>
-            <p style=${{ fontSize: '0.8rem', color: '#555', marginBottom: '16px' }}>
-              Fill in the following fields before generating the petition:
+            <p style=${{ fontSize: '0.8rem', color: '#555', marginBottom: '18px' }}>
+              ${allFilled
+                ? 'Click "Generate Petition" below to continue.'
+                : 'Complete the fields below — you can edit them right here without leaving the dialog.'}
             </p>
-            <ul style=${{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              ${fields.map((f) => html`
-                <li key=${f} style=${{
-                  display: 'flex', alignItems: 'center', gap: '10px',
-                  padding: '8px 12px', background: '#111', border: '1px solid #222',
-                  borderRadius: '6px', fontSize: '0.85rem', color: '#e8e8e8',
-                }}>
-                  <span style=${{ color: '#e53935', fontWeight: 700, flexShrink: 0 }}>—</span>
-                  ${f}
-                </li>
-              `)}
-            </ul>
-            <div style=${{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
-              <${Btn} onClick=${onClose}>Got it<//>
+            ${!allFilled && missing.map((f) => html`
+              <${Field} key=${f.path} label=${f.label}>
+                ${f.type === 'textarea'
+                  ? html`<${TextArea} value=${getValue(f.path)} onChange=${(v) => update(f.path, v)} placeholder=${f.placeholder} rows=${2} />`
+                  : html`<${TextInput} value=${getValue(f.path)} onChange=${(v) => update(f.path, v)} placeholder=${f.placeholder} />`
+                }
+              <//>
+            `)}
+            ${submitError && html`
+              <div style=${{ marginTop: '16px', padding: '10px 14px', background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.4)', borderRadius: '6px', color: '#e53935', fontSize: '0.85rem' }}>
+                ${submitError}
+              </div>
+            `}
+            <div style=${{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <${Btn} variant="secondary" onClick=${onClose}>Close<//>
+              <${Btn} onClick=${onSubmit} disabled=${!allFilled || submitting}>
+                ${submitting ? 'Submitting…' : 'Generate Petition ⚖'}
+              <//>
             </div>
           </div>
         </div>
@@ -715,14 +729,15 @@
       const [mode, setMode] = useState('form');
       const [submitting, setSubmitting] = useState(false);
       const [submitError, setSubmitError] = useState('');
-      const [validationErrors, setValidationErrors] = useState([]);
+      const [showValidation, setShowValidation] = useState(false);
 
       const submitToServer = async () => {
         const missing = getMissingFields(data);
         if (missing.length > 0) {
-          setValidationErrors(missing);
+          setShowValidation(true);
           return;
         }
+        setShowValidation(false);
         setSubmitError('');
         setSubmitting(true);
         try {
@@ -744,11 +759,12 @@
 
       const update = (path, value) => {
         setData((prev) => {
-          const next = { ...prev };
+          const clone = (v) => Array.isArray(v) ? [...v] : { ...v };
           const keys = path.split('.');
+          const next = clone(prev);
           let cur = next;
           for (let i = 0; i < keys.length - 1; i++) {
-            cur[keys[i]] = { ...cur[keys[i]] };
+            cur[keys[i]] = clone(cur[keys[i]]);
             cur = cur[keys[i]];
           }
           cur[keys[keys.length - 1]] = value;
@@ -756,8 +772,7 @@
         });
       };
 
-      const updateArray = (key, arr) => setData((prev) => ({ ...prev, [key]: arr }));
-      const stepProps = { data, update, updateArray };
+      const stepProps = { data, update };
 
       if (mode === 'preview') return html`<${Preview} data=${data} onBack=${() => setMode('form')} />`;
 
@@ -852,8 +867,15 @@
           </footer>
         </div>
 
-        ${validationErrors.length > 0 && html`
-          <${ValidationModal} fields=${validationErrors} onClose=${() => setValidationErrors([])} />
+        ${showValidation && html`
+          <${ValidationModal}
+            data=${data}
+            update=${update}
+            submitting=${submitting}
+            submitError=${submitError}
+            onClose=${() => setShowValidation(false)}
+            onSubmit=${submitToServer}
+          />
         `}
       `;
     }
