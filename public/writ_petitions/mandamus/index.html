@@ -563,6 +563,90 @@
     }
 
     // ============================================================
+    // VALIDATION
+    // ============================================================
+    function getMissingFields(d) {
+      const missing = [];
+      if (!d.court.state.trim())             missing.push('Court: State');
+      if (!d.court.city.trim())              missing.push('Court: City / Seat');
+      if (!d.caseInfo.year.trim())           missing.push('Case: Year');
+      if (!d.petitioner.name.trim())         missing.push('Petitioner: Full Name');
+      if (!d.petitioner.age.trim())          missing.push('Petitioner: Age');
+      if (!d.petitioner.fatherName.trim())   missing.push('Petitioner: Father / Husband Name');
+      if (!d.petitioner.address.trim())      missing.push('Petitioner: Residential Address');
+      d.respondents.forEach((r, i) => {
+        if (!r.description.trim()) missing.push(`Respondent ${i + 1}: Description`);
+      });
+      if (!d.subject.briefSubject.trim())       missing.push('Subject: Brief Subject');
+      if (!d.subject.publicDuty.trim())         missing.push('Subject: Public / Statutory Duty');
+      if (!d.subject.statutoryProvision.trim()) missing.push('Subject: Statutory Provision');
+      d.facts.forEach((f, i) => {
+        if (!f.text.trim()) missing.push(`Fact ${i + 1}: Fact`);
+      });
+      if (!d.representation.failureDetails.trim()) missing.push('Grounds: Failure / Inaction by Respondents');
+      if (!d.prayer.mainPrayer.trim())       missing.push('Prayer: Main Relief');
+      if (!d.advocate.name.trim())           missing.push('Advocate: Name');
+      if (!d.advocate.place.trim())          missing.push('Advocate: Place');
+      if (!d.advocate.date.trim())           missing.push('Advocate: Date');
+      return missing;
+    }
+
+    function ValidationModal({ fields, onClose }) {
+      return html`
+        <div
+          onClick=${onClose}
+          style=${{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.75)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick=${(e) => e.stopPropagation()}
+            style=${{
+              background: '#0a0a0a', border: '1px solid #333',
+              borderRadius: '12px', padding: '32px 36px',
+              maxWidth: '480px', width: '100%',
+              boxShadow: '0 24px 48px rgba(0,0,0,0.8)',
+            }}
+          >
+            <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h2 style=${{ fontSize: '1rem', fontWeight: 700, color: '#e53935', letterSpacing: '-0.2px' }}>
+                Required fields are empty
+              </h2>
+              <button
+                onClick=${onClose}
+                style=${{
+                  background: 'transparent', border: 'none', color: '#555',
+                  fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1, padding: '2px 6px',
+                }}
+              >×</button>
+            </div>
+            <p style=${{ fontSize: '0.8rem', color: '#555', marginBottom: '16px' }}>
+              Fill in the following fields before generating the petition:
+            </p>
+            <ul style=${{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              ${fields.map((f) => html`
+                <li key=${f} style=${{
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  padding: '8px 12px', background: '#111', border: '1px solid #222',
+                  borderRadius: '6px', fontSize: '0.85rem', color: '#e8e8e8',
+                }}>
+                  <span style=${{ color: '#e53935', fontWeight: 700, flexShrink: 0 }}>—</span>
+                  ${f}
+                </li>
+              `)}
+            </ul>
+            <div style=${{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
+              <${Btn} onClick=${onClose}>Got it<//>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================================
     // PREVIEW SCREEN
     // ============================================================
     function Preview({ data, onBack }) {
@@ -631,8 +715,14 @@
       const [mode, setMode] = useState('form');
       const [submitting, setSubmitting] = useState(false);
       const [submitError, setSubmitError] = useState('');
+      const [validationErrors, setValidationErrors] = useState([]);
 
       const submitToServer = async () => {
+        const missing = getMissingFields(data);
+        if (missing.length > 0) {
+          setValidationErrors(missing);
+          return;
+        }
         setSubmitError('');
         setSubmitting(true);
         try {
@@ -761,6 +851,10 @@
             Generated petitions are drafts for counsel. Final form, court fee, and accompanying affidavits must be reviewed before filing.
           </footer>
         </div>
+
+        ${validationErrors.length > 0 && html`
+          <${ValidationModal} fields=${validationErrors} onClose=${() => setValidationErrors([])} />
+        `}
       `;
     }
 
