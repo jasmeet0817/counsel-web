@@ -47,15 +47,16 @@
     // ============================================================
     const initialData = {
       court: { type: 'High Court', state: '', city: '', bench: '' },
-      caseInfo: { year: String(new Date().getFullYear()), jurisdictionType: 'Civil' },
+      caseInfo: { year: String(new Date().getFullYear()), jurisdictionType: 'Civil', isPIL: 'No' },
       petitioner: { name: '', age: '', relation: 'S/o', fatherName: '', occupation: '', address: '' },
       respondents: [{ description: '', address: '' }],
       subject: { briefSubject: '', publicDuty: '', statutoryProvision: '' },
       facts: [{ date: '', text: '' }],
       representation: { dateOfRepresentation: '', failureDetails: '' },
       grounds: [''],
-      prayer: { mainPrayer: '', interimRelief: '' },
-      advocate: { name: '', enrollment: '', place: '', date: '' },
+      prayer: { mainPrayer: '', interimRelief: '', urgencyGround: '' },
+      filing: { standingCounselName: '', standingCounselAddress: '', exemptionGround: '' },
+      advocate: { name: '', enrollment: '', officeAddress: '', mobile: '', place: '', date: '' },
       annexures: [''],
     };
 
@@ -209,6 +210,8 @@
       lines.push(right(d.advocate.name || '[Advocate Name]'));
       lines.push(right('Advocate for the Petitioner'));
       if (d.advocate.enrollment) lines.push(right(`Enrollment No.: ${d.advocate.enrollment}`));
+      if (d.advocate.officeAddress) d.advocate.officeAddress.split('\n').forEach((ln) => lines.push(right(ln)));
+      if (d.advocate.mobile) lines.push(right(`Mob: ${d.advocate.mobile}`));
       lines.push(''); lines.push('');
       lines.push('V E R I F I C A T I O N');
       lines.push('');
@@ -355,13 +358,13 @@
     function AddBtn({ onClick, label }) {
       return html`
         <button onClick=${onClick} style=${{
-          background: 'transparent', border: '1.5px dashed #2e2e2e', color: '#555',
+          background: 'transparent', border: '1.5px dashed #2e2e2e', color: '#fff',
           padding: '10px 16px', fontSize: '0.8rem', fontWeight: 500,
           cursor: 'pointer', width: '100%', marginTop: '8px', borderRadius: '8px',
           fontFamily: 'inherit', transition: 'border-color 0.15s, color 0.15s',
         }}
         onMouseEnter=${(e) => { e.currentTarget.style.borderColor = '#e53935'; e.currentTarget.style.color = '#e53935'; }}
-        onMouseLeave=${(e) => { e.currentTarget.style.borderColor = '#2e2e2e'; e.currentTarget.style.color = '#555'; }}
+        onMouseLeave=${(e) => { e.currentTarget.style.borderColor = '#2e2e2e'; e.currentTarget.style.color = '#fff'; }}
         >+ ${label}</button>
       `;
     }
@@ -391,6 +394,9 @@
             <//>
             <${Field} label="Year" required=${true}>
               <${TextInput} value=${data.caseInfo.year} onChange=${(v) => update('caseInfo.year', v)} placeholder="2026" />
+            <//>
+            <${Field} label="Public Interest Litigation?" help="Adds locus / no personal interest paragraph">
+              <${SelectInput} value=${data.caseInfo.isPIL} onChange=${(v) => update('caseInfo.isPIL', v)} options=${['No', 'Yes']} />
             <//>
           </div>
         </div>
@@ -526,6 +532,9 @@
           <${Field} label="Interim Relief" help="Optional — any protection pending final disposal">
             <${TextArea} value=${data.prayer.interimRelief} onChange=${(v) => update('prayer.interimRelief', v)} placeholder="e.g. stay the operation of the impugned order / direct the Respondents not to take coercive steps..." rows=${3} />
           <//>
+          <${Field} label="Ground of Urgency" required=${true} help="Time-sensitive ground for the Urgent Application">
+            <${TextArea} value=${data.prayer.urgencyGround} onChange=${(v) => update('prayer.urgencyGround', v)} placeholder="e.g. the impugned action is scheduled to take effect on ___, which would render the present petition infructuous" rows=${3} />
+          <//>
         </div>
       `;
     }
@@ -541,6 +550,9 @@
             <${Field} label="Enrollment No." help="Bar Council number">
               <${TextInput} value=${data.advocate.enrollment} onChange=${(v) => update('advocate.enrollment', v)} placeholder="e.g. D/1234/2015" />
             <//>
+            <${Field} label="Mobile" required=${true} help="Appears in every signature block">
+              <${TextInput} value=${data.advocate.mobile} onChange=${(v) => update('advocate.mobile', v)} placeholder="+91 ..." />
+            <//>
             <${Field} label="Place" required=${true}>
               <${TextInput} value=${data.advocate.place} onChange=${(v) => update('advocate.place', v)} placeholder="New Delhi" />
             <//>
@@ -548,6 +560,21 @@
               <${TextInput} value=${data.advocate.date} onChange=${(v) => update('advocate.date', v)} placeholder="DD.MM.YYYY" />
             <//>
           </div>
+          <${Field} label="Office Address" required=${true} help="Appears in every signature block">
+            <${TextArea} value=${data.advocate.officeAddress} onChange=${(v) => update('advocate.officeAddress', v)} placeholder="Chamber/Office address" rows=${2} />
+          <//>
+          <div style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase', margin: '20px 0 12px' }}>Filing — Optional</div>
+          <div class="grid grid-cols-2 gap-4">
+            <${Field} label="Standing / Opposing Counsel" help="For Notice of Motion">
+              <${TextInput} value=${data.filing.standingCounselName} onChange=${(v) => update('filing.standingCounselName', v)} placeholder="Optional" />
+            <//>
+            <${Field} label="Counsel Address" help="For Notice of Motion">
+              <${TextInput} value=${data.filing.standingCounselAddress} onChange=${(v) => update('filing.standingCounselAddress', v)} placeholder="Optional" />
+            <//>
+          </div>
+          <${Field} label="Section 151 CPC — Exemption Ground" help="Optional — ground for any exemption application (urgency, unavailability of originals, etc.)">
+            <${TextArea} value=${data.filing.exemptionGround} onChange=${(v) => update('filing.exemptionGround', v)} placeholder="Optional — leave blank if no exemption application is being filed" rows=${2} />
+          <//>
           <div style=${{ fontSize: '0.7rem', fontWeight: 600, color: '#555', letterSpacing: '0.6px', textTransform: 'uppercase', margin: '20px 0 12px' }}>Annexures</div>
           ${data.annexures.map((a, i) => html`
             <div key=${i} style=${{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '8px' }}>
@@ -587,11 +614,95 @@
         add(!f.text.trim(), { label: `Fact ${i + 1}: Fact`, path: `facts.${i}.text`, type: 'textarea', placeholder: "Describe what happened. 'That' is added automatically." });
       });
       add(!d.representation.failureDetails.trim(), { label: 'Grounds: Failure / Inaction by Respondents', path: 'representation.failureDetails', type: 'textarea', placeholder: 'e.g. despite lapse of the statutory period, the Respondents have failed...' });
-      add(!d.prayer.mainPrayer.trim(), { label: 'Prayer: Main Relief',  path: 'prayer.mainPrayer', type: 'textarea', placeholder: 'e.g. decide the representation dated ___ within eight weeks, in accordance with law' });
-      add(!d.advocate.name.trim(),     { label: 'Advocate: Name',       path: 'advocate.name',     type: 'text',     placeholder: 'Name of counsel' });
-      add(!d.advocate.place.trim(),    { label: 'Advocate: Place',      path: 'advocate.place',    type: 'text',     placeholder: 'New Delhi' });
-      add(!d.advocate.date.trim(),     { label: 'Advocate: Date',       path: 'advocate.date',     type: 'text',     placeholder: 'DD.MM.YYYY' });
+      add(!d.prayer.mainPrayer.trim(),    { label: 'Prayer: Main Relief',       path: 'prayer.mainPrayer',    type: 'textarea', placeholder: 'e.g. decide the representation dated ___ within eight weeks, in accordance with law' });
+      add(!d.prayer.urgencyGround.trim(), { label: 'Prayer: Ground of Urgency', path: 'prayer.urgencyGround', type: 'textarea', placeholder: 'e.g. the impugned action is scheduled to take effect on ___, which would render the present petition infructuous' });
+      add(!d.advocate.name.trim(),          { label: 'Advocate: Name',           path: 'advocate.name',          type: 'text',     placeholder: 'Name of counsel' });
+      add(!d.advocate.mobile.trim(),        { label: 'Advocate: Mobile',         path: 'advocate.mobile',        type: 'text',     placeholder: '+91 ...' });
+      add(!d.advocate.officeAddress.trim(), { label: 'Advocate: Office Address', path: 'advocate.officeAddress', type: 'textarea', placeholder: 'Chamber/Office address' });
+      add(!d.advocate.place.trim(),         { label: 'Advocate: Place',          path: 'advocate.place',         type: 'text',     placeholder: 'New Delhi' });
+      add(!d.advocate.date.trim(),          { label: 'Advocate: Date',           path: 'advocate.date',          type: 'text',     placeholder: 'DD.MM.YYYY' });
       return missing;
+    }
+
+    function UploadDataModal({ onClose, onSubmit, submitting, submitError }) {
+      const [text, setText] = useState('');
+      const [localError, setLocalError] = useState('');
+
+      const handleGenerate = () => {
+        if (text.trim().length < 100) {
+          setLocalError('Not enough data to generate Petition.');
+          return;
+        }
+        setLocalError('');
+        onSubmit(text);
+      };
+
+      return html`
+        <div
+          onClick=${onClose}
+          style=${{
+            position: 'fixed', inset: 0, zIndex: 9999,
+            background: 'rgba(0,0,0,0.75)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick=${(e) => e.stopPropagation()}
+            style=${{
+              background: '#0a0a0a', border: '1px solid #333',
+              borderRadius: '12px', padding: '28px 32px',
+              maxWidth: '640px', width: '100%',
+              maxHeight: '85vh', overflowY: 'auto',
+              boxShadow: '0 24px 48px rgba(0,0,0,0.8)',
+            }}
+          >
+            <div style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h2 style=${{ fontSize: '1rem', fontWeight: 700, color: '#fff', letterSpacing: '-0.2px' }}>
+                Upload all the data you have here
+              </h2>
+              <button
+                onClick=${onClose}
+                style=${{
+                  background: 'transparent', border: 'none', color: '#555',
+                  fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1, padding: '2px 6px',
+                }}
+              >×</button>
+            </div>
+            <p style=${{ fontSize: '0.8rem', color: '#555', marginBottom: '14px' }}>
+              Paste all petition-related facts, parties, grounds, and prayers here. Minimum 100 characters.
+            </p>
+            <textarea
+              value=${text}
+              onInput=${(e) => setText(e.target.value)}
+              placeholder="Paste everything you have about the case — parties, facts, dates, representations, statutory duties, grounds, prayers..."
+              rows=${12}
+              style=${{ ...inputStyle, resize: 'vertical', lineHeight: 1.55 }}
+              onFocus=${(e) => (e.target.style.borderColor = '#e53935')}
+              onBlur=${(e) => (e.target.style.borderColor = '#333')}
+            />
+            <div style=${{ marginTop: '6px', fontSize: '0.72rem', color: text.trim().length >= 100 ? '#4ade80' : '#555' }}>
+              ${text.trim().length} characters
+            </div>
+            ${localError && html`
+              <div style=${{ marginTop: '12px', padding: '10px 14px', background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.4)', borderRadius: '6px', color: '#e53935', fontSize: '0.85rem' }}>
+                ${localError}
+              </div>
+            `}
+            ${submitError && html`
+              <div style=${{ marginTop: '12px', padding: '10px 14px', background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.4)', borderRadius: '6px', color: '#e53935', fontSize: '0.85rem' }}>
+                ${submitError}
+              </div>
+            `}
+            <div style=${{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <${Btn} variant="secondary" onClick=${onClose}>Close<//>
+              <${Btn} onClick=${handleGenerate} disabled=${submitting}>
+                ${submitting ? 'Submitting…' : 'Generate Petition ⚖'}
+              <//>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function ValidationModal({ data, update, onClose, onSubmit, submitting, submitError }) {
@@ -730,6 +841,29 @@
       const [submitting, setSubmitting] = useState(false);
       const [submitError, setSubmitError] = useState('');
       const [showValidation, setShowValidation] = useState(false);
+      const [showUpload, setShowUpload] = useState(false);
+      const [bulkSubmitting, setBulkSubmitting] = useState(false);
+      const [bulkSubmitError, setBulkSubmitError] = useState('');
+
+      const submitBulkData = async (allPetitionData) => {
+        setBulkSubmitError('');
+        setBulkSubmitting(true);
+        try {
+          const res = await fetch('/counsel/writ-petitions/mandamus/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ all_petition_data: allPetitionData }),
+          });
+          const body = await res.json().catch(() => ({}));
+          if (!res.ok || !body.id) {
+            throw new Error(body?.errors?.body?.[0] || body?.message || `Request failed (${res.status})`);
+          }
+          window.location.href = `./result.html?id=${encodeURIComponent(body.id)}`;
+        } catch (e) {
+          setBulkSubmitError(e.message || 'Failed to submit petition.');
+          setBulkSubmitting(false);
+        }
+      };
 
       const submitToServer = async () => {
         const missing = getMissingFields(data);
@@ -791,8 +925,13 @@
                   <span style=${{ fontWeight: 400, color: '#555', fontSize: '1rem', marginLeft: '10px' }}>Petition Generator</span>
                 </h1>
               </div>
-              <div style=${{ fontSize: '0.78rem', color: '#444', maxWidth: '280px', textAlign: 'right', lineHeight: 1.5, fontStyle: 'italic' }}>
-                "We command" — a writ compelling a public authority to perform a duty cast upon it by law.
+              <div style=${{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+                <div style=${{ fontSize: '0.78rem', color: '#444', maxWidth: '280px', textAlign: 'right', lineHeight: 1.5, fontStyle: 'italic' }}>
+                  "We command" — a writ compelling a public authority to perform a duty cast upon it by law.
+                </div>
+                <${Btn} variant="secondary" onClick=${() => { setBulkSubmitError(''); setShowUpload(true); }}>
+                  ⇪ Upload all petition data
+                <//>
               </div>
             </div>
           </header>
@@ -866,6 +1005,15 @@
             Generated petitions are drafts for counsel. Final form, court fee, and accompanying affidavits must be reviewed before filing.
           </footer>
         </div>
+
+        ${showUpload && html`
+          <${UploadDataModal}
+            submitting=${bulkSubmitting}
+            submitError=${bulkSubmitError}
+            onClose=${() => { if (!bulkSubmitting) setShowUpload(false); }}
+            onSubmit=${submitBulkData}
+          />
+        `}
 
         ${showValidation && html`
           <${ValidationModal}
