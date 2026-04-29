@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Adaptation — Counsel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0a0a0a;
+      --bg-card:     #111111;
+      --bg-elevated: #1a1a1a;
+      --border:      #222222;
+      --border-mid:  #2e2e2e;
+      --text:        #e8e8e8;
+      --text-muted:  #888888;
+      --red:         #e53935;
+      --red-dim:     rgba(229,57,53,0.08);
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .brand-logo { width: 24px; height: 24px; border-radius: 4px; }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 36px;
+      line-height: 1.5;
+    }
+    .field { margin-bottom: 24px; }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    textarea {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding: 14px 16px;
+      resize: vertical;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--red); }
+    textarea::placeholder { color: var(--text-muted); }
+    .error-msg {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: var(--red);
+    }
+    .submit-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+    button[type="submit"] {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 24px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+    .global-error {
+      padding: 12px 16px;
+      background: var(--red-dim);
+      border: 1px solid var(--red);
+      border-radius: 8px;
+      color: var(--red);
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <img src="/favicon.jpg" alt="" class="brand-logo" />
+      <span>Counsel</span>
+    </a>
+  </header>
+
+  <div id="app"></div>
+
+  <script type="module">
+    import { h, render } from 'https://esm.sh/preact@10';
+    import { useState, useRef } from 'https://esm.sh/preact@10/hooks';
+    import htm from 'https://esm.sh/htm@3';
+    const html = htm.bind(h);
+
+    function App() {
+      const [templateText, setTemplateText] = useState('');
+      const [clientText, setClientText] = useState('');
+      const [errors, setErrors] = useState({});
+      const [globalError, setGlobalError] = useState('');
+      const [submitting, setSubmitting] = useState(false);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrors({});
+        setGlobalError('');
+
+        const newErrors = {};
+        if (!templateText.trim()) newErrors.template_text = 'This field is required.';
+        if (!clientText.trim()) newErrors.client_text = 'This field is required.';
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          return;
+        }
+
+        setSubmitting(true);
+        try {
+          const res = await fetch('/counsel/template-adaptation/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ template_text: templateText, client_text: clientText }),
+          });
+          const data = await res.json();
+
+          if (!data.success) {
+            if (data.errors) {
+              const mapped = {};
+              for (const [k, msgs] of Object.entries(data.errors)) {
+                mapped[k] = Array.isArray(msgs) ? msgs[0] : msgs;
+              }
+              setErrors(mapped);
+            } else {
+              setGlobalError('Something went wrong. Please try again.');
+            }
+            setSubmitting(false);
+            return;
+          }
+
+          window.location.href = './result.html?id=' + encodeURIComponent(data.adaptation_id);
+        } catch (err) {
+          setGlobalError('Network error. Please check your connection and try again.');
+          setSubmitting(false);
+        }
+      };
+
+      return html`
+        <main>
+          <h1>Adapt a Template</h1>
+          <p class="subtitle">
+            Paste your template document and describe the new client. Counsel will
+            adapt the template and open it in Draft Playground for further editing.
+          </p>
+
+          ${globalError && html`<div class="global-error">${globalError}</div>`}
+
+          <form onSubmit=${handleSubmit}>
+            <div class="field">
+              <label for="template-text">Template Document</label>
+              <textarea
+                id="template-text"
+                rows="14"
+                placeholder="Paste the full text of your template document here…"
+                value=${templateText}
+                onInput=${(e) => setTemplateText(e.target.value)}
+                style=${{ borderColor: errors.template_text ? 'var(--red)' : '' }}
+              ></textarea>
+              ${errors.template_text && html`<div class="error-msg">${errors.template_text}</div>`}
+            </div>
+
+            <div class="field">
+              <label for="client-text">Client Information</label>
+              <textarea
+                id="client-text"
+                rows="8"
+                placeholder="Describe the new client: name, address, nature of matter, key terms, any specific requirements…"
+                value=${clientText}
+                onInput=${(e) => setClientText(e.target.value)}
+                style=${{ borderColor: errors.client_text ? 'var(--red)' : '' }}
+              ></textarea>
+              ${errors.client_text && html`<div class="error-msg">${errors.client_text}</div>`}
+            </div>
+
+            <div class="submit-row">
+              <button type="submit" disabled=${submitting}>
+                ${submitting ? 'Submitting…' : 'Adapt Template →'}
+              </button>
+            </div>
+          </form>
+        </main>
+      `;
+    }
+
+    render(html`<${App} />`, document.getElementById('app'));
+  </script>
+</body>
+</html>

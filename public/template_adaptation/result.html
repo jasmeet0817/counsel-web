@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adapting Template — Counsel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0a0a0a;
+      --bg-card:     #111111;
+      --border:      #222222;
+      --text:        #e8e8e8;
+      --text-muted:  #888888;
+      --red:         #e53935;
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .brand-logo { width: 24px; height: 24px; border-radius: 4px; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid #2e2e2e;
+      border-top-color: var(--red);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <img src="/favicon.jpg" alt="" class="brand-logo" />
+      <span>Counsel</span>
+    </a>
+  </header>
+
+  <div id="app"></div>
+
+  <script type="module">
+    import { h, render } from 'https://esm.sh/preact@10';
+    import { useState, useEffect, useMemo } from 'https://esm.sh/preact@10/hooks';
+    import htm from 'https://esm.sh/htm@3';
+    const html = htm.bind(h);
+
+    const POLL_INTERVAL_MS = 3000;
+
+    function getAdaptationId() {
+      return new URLSearchParams(window.location.search).get('id') || '';
+    }
+
+    function Loading() {
+      return html`
+        <div style=${{ minHeight: 'calc(100vh - 49px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '18px' }}>
+          <div class="spinner"></div>
+          <div style=${{ color: '#888', fontSize: '0.95rem' }}>Adapting your template…</div>
+          <div style=${{ color: '#444', fontSize: '0.78rem', maxWidth: '420px', textAlign: 'center', lineHeight: 1.5 }}>
+            This can take 30–90 seconds. The page will redirect automatically when ready.
+          </div>
+        </div>
+      `;
+    }
+
+    function ErrorView({ title, message }) {
+      return html`
+        <div style=${{ minHeight: 'calc(100vh - 49px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', padding: '24px' }}>
+          <div style=${{ fontSize: '0.72rem', fontWeight: 600, color: '#e53935', letterSpacing: '0.7px', textTransform: 'uppercase' }}>
+            ${title}
+          </div>
+          <div style=${{ color: '#ccc', fontSize: '0.95rem', maxWidth: '520px', textAlign: 'center', lineHeight: 1.6 }}>
+            ${message}
+          </div>
+          <a href="./index.html" style=${{
+            marginTop: '12px', padding: '10px 18px', borderRadius: '6px',
+            background: '#e53935', color: '#fff', fontSize: '0.85rem', fontWeight: 600,
+            textDecoration: 'none',
+          }}>← Try Again</a>
+        </div>
+      `;
+    }
+
+    function App() {
+      const adaptationId = useMemo(getAdaptationId, []);
+      const [state, setState] = useState('loading');
+      const [error, setError] = useState('');
+
+      useEffect(() => {
+        if (!adaptationId) {
+          setState('missing_id');
+          return;
+        }
+
+        let cancelled = false;
+        let timer = null;
+
+        const poll = async () => {
+          try {
+            const res = await fetch(`/counsel/template-adaptation/${encodeURIComponent(adaptationId)}/`);
+            if (res.status === 404) {
+              if (!cancelled) setState('not_found');
+              return;
+            }
+            const body = await res.json();
+            if (cancelled) return;
+
+            if (body.status === 'completed') {
+              window.location.replace(`/draft_playground/?doc=${encodeURIComponent(body.document_id)}`);
+              return;
+            }
+            if (body.status === 'failed') {
+              setState('failed');
+              setError(body.message || 'Adaptation failed.');
+              return;
+            }
+            timer = setTimeout(poll, POLL_INTERVAL_MS);
+          } catch (e) {
+            if (!cancelled) timer = setTimeout(poll, POLL_INTERVAL_MS);
+          }
+        };
+
+        poll();
+        return () => { cancelled = true; if (timer) clearTimeout(timer); };
+      }, [adaptationId]);
+
+      if (state === 'missing_id') {
+        return html`<${ErrorView} title="Missing ID" message="This page expects ?id=<uuid> in the URL." />`;
+      }
+      if (state === 'not_found') {
+        return html`<${ErrorView} title="Not Found" message="No adaptation found for this ID." />`;
+      }
+      if (state === 'failed') {
+        return html`<${ErrorView} title="Adaptation Failed" message=${error} />`;
+      }
+      return html`<${Loading} />`;
+    }
+
+    render(html`<${App} />`, document.getElementById('app'));
+  </script>
+</body>
+</html>
