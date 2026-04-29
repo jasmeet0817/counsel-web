@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Draft Playground · Counsel</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="dp-app">
+    <!-- Left: Document Editor -->
+    <section class="dp-pane dp-pane--left" id="dp-left">
+      <header class="dp-toolbar">
+        <div class="dp-toolbar__title" id="dp-filename">Draft Playground</div>
+        <div class="dp-toolbar__actions">
+          <button type="button" class="dp-btn dp-btn--ghost" id="dp-open-file">Open .docx</button>
+          <button type="button" class="dp-btn" id="dp-download" disabled>Download</button>
+        </div>
+      </header>
+
+      <div class="dp-editor-wrap" id="dp-editor-wrap">
+        <div class="dp-dropzone" id="dp-dropzone">
+          <div class="dp-dropzone__inner">
+            <div class="dp-dropzone__icon">↑</div>
+            <div class="dp-dropzone__title">Drop a .docx file here</div>
+            <div class="dp-dropzone__hint">or click to browse</div>
+          </div>
+          <input type="file" id="dp-file-input" accept=".docx" hidden />
+        </div>
+
+        <div class="dp-editor" id="dp-editor" contenteditable="false" spellcheck="true"></div>
+      </div>
+    </section>
+
+    <!-- Right: Chat Panel -->
+    <aside class="dp-pane dp-pane--right" id="dp-right">
+      <header class="dp-toolbar">
+        <div class="dp-toolbar__title">Chat</div>
+        <div class="dp-toolbar__actions">
+          <span class="dp-status" id="dp-selection-status">No selection</span>
+        </div>
+      </header>
+
+      <div class="dp-chat" id="dp-chat">
+        <div class="dp-chat__hint" id="dp-chat-hint">
+          Select text in the document, then ask for a rewrite.
+        </div>
+        <div class="dp-cross-clause-banner is-hidden" id="dp-cross-clause-banner">
+          Selection spans multiple clauses — select text within a single clause to chat.
+        </div>
+        <div class="dp-chat__messages" id="dp-chat-messages"></div>
+      </div>
+
+      <form class="dp-chat__composer" id="dp-chat-form" autocomplete="off">
+        <textarea
+          id="dp-chat-input"
+          rows="3"
+          placeholder="Select text in the document to start chatting…"
+          disabled
+        ></textarea>
+        <button type="submit" class="dp-btn" id="dp-chat-send" disabled>Send</button>
+      </form>
+    </aside>
+  </div>
+
+  <!-- Vendor scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+  <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+
+  <!-- App modules (load order matters: app.js LAST) -->
+  <script src="js/docx-loader.js"></script>
+  <script src="js/docx-exporter.js"></script>
+  <script src="js/diff-view.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/autosave.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -12,4 +12,5 @@ In `public/app.html`, scripts must be loaded in dependency order — `app.js` la
 
 `app.js` instantiates classes defined in the other files (`CounselRecorder`, etc.). Loading it first causes `ReferenceError` on `DOMContentLoaded`.
 
-Never check another project except this one unless explicit permission is given
+Never check another project except this one unless explicit told to
+Backend code is in ../counsel-backend/
