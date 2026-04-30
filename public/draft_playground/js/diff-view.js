@@ -48,6 +48,27 @@ class DiffView {
     return pill;
   }
 
+  static buildInlineActions({ onAccept, onReject }) {
+    const wrap = document.createElement('div');
+    wrap.className = 'dp-diff-actions';
+
+    const acceptBtn = document.createElement('button');
+    acceptBtn.type = 'button';
+    acceptBtn.className = 'dp-diff-actions__accept';
+    acceptBtn.textContent = 'Accept';
+    acceptBtn.addEventListener('click', onAccept);
+
+    const rejectBtn = document.createElement('button');
+    rejectBtn.type = 'button';
+    rejectBtn.className = 'dp-diff-actions__reject';
+    rejectBtn.textContent = 'Reject';
+    rejectBtn.addEventListener('click', onReject);
+
+    wrap.appendChild(acceptBtn);
+    wrap.appendChild(rejectBtn);
+    return wrap;
+  }
+
   static positionPill(pill, anchorEl) {
     const rect = anchorEl.getBoundingClientRect();
     pill.style.position = 'fixed';

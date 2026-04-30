@@ -272,6 +272,27 @@ body {
 .dp-diff-pill__accept:hover { filter: brightness(1.08); }
 .dp-diff-pill__reject:hover { background: var(--bg-elevated); }
 
+/* ── Inline diff action buttons ──────────────────── */
+.dp-diff-actions {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.dp-diff-actions button {
+  border: 0;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dp-diff-actions__accept { background: var(--green); color: #052e16; }
+.dp-diff-actions__reject { background: var(--bg-card); color: var(--text); border: 1px solid var(--border-mid) !important; }
+.dp-diff-actions__accept:hover { filter: brightness(1.08); }
+.dp-diff-actions__reject:hover { background: var(--bg-elevated); }
+
 /* ── Chat panel ────────────────────────────────── */
 .dp-chat {
   flex: 1 1 auto;

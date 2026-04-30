@@ -121,10 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const originalText = descEl.textContent;
       descEl.innerHTML = window.DiffView.renderInline(originalText, newText);
 
-      const pill = window.DiffView.buildPill({
+      const actions = window.DiffView.buildInlineActions({
         onAccept: () => {
           descEl.textContent = newText;
-          pill.remove();
+          actions.remove();
           _pendingDiffCount--;
           if (_pendingDiffCount === 0) {
             chat.setPending(false);
@@ -140,15 +140,14 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         onReject: () => {
           descEl.textContent = originalText;
-          pill.remove();
+          actions.remove();
           _pendingDiffCount--;
           if (_pendingDiffCount === 0) {
             chat.setPending(false);
           }
         },
       });
-      document.body.appendChild(pill);
-      window.DiffView.positionPill(pill, descEl);
+      descEl.insertAdjacentElement('afterend', actions);
     }
   }
 

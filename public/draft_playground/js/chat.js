@@ -185,12 +185,12 @@ class ChatPanel extends EventTarget {
   }
 
   _startCycling(node) {
-    const messages = ['Thinking…', 'Lawyering…', 'Understanding requirements…'];
+    const messages = ['Thinking…', 'Lawyering…', 'Understanding requirements…', 'Drafting…'];
     let idx = 0;
     this._cycleInterval = setInterval(() => {
       idx = (idx + 1) % messages.length;
       node.textContent = messages[idx];
-    }, 1500);
+    }, 4000);
   }
 
   _stopCycling() {
