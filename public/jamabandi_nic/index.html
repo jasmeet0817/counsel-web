@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find in Jamabandi — Counsel</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:          #0a0a0a;
+      --bg-card:     #111111;
+      --bg-elevated: #1a1a1a;
+      --border:      #222222;
+      --border-mid:  #2e2e2e;
+      --text:        #e8e8e8;
+      --text-muted:  #888888;
+      --red:         #e53935;
+      --red-dim:     rgba(229,57,53,0.08);
+      --green:       #4ade80;
+    }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 16px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.95rem; }
+    .brand-logo { width: 24px; height: 24px; border-radius: 4px; }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+    .params {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .params strong { color: var(--text); font-weight: 600; }
+    button.primary {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 24px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    button.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .status-row {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      min-height: 22px;
+    }
+    .status-row .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-muted);
+    }
+    .status-row.running .dot { background: var(--red); animation: pulse 1.2s infinite; }
+    .status-row.done .dot { background: var(--green); }
+    .status-row.error .dot { background: var(--red); }
+    .status-row.error { color: var(--red); }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .result-block { margin-top: 28px; }
+    .result-label-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .result-label-row label {
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    button.copy {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-mid);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-family: inherit;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    button.copy:hover { color: var(--text); border-color: var(--text-muted); }
+    textarea {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      padding: 14px 16px;
+      resize: vertical;
+      min-height: 320px;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--red); }
+    .owner-block { margin-top: 28px; display: none; }
+    .owner-block.visible { display: block; }
+    .owner-block label {
+      display: block;
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .owner-row { display: flex; gap: 10px; align-items: stretch; }
+    .owner-row input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 10px 14px;
+      outline: none;
+    }
+    .owner-row input:focus { border-color: var(--red); }
+    .owner-result {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      white-space: pre-wrap;
+      display: none;
+    }
+    .owner-result.visible { display: block; }
+    .owner-result.error { color: var(--red); border-color: var(--red); background: var(--red-dim); }
+    .owner-field { margin: 0; padding: 2px 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <img src="/favicon.jpg" alt="" class="brand-logo" />
+      <span>Counsel</span>
+    </a>
+  </header>
+  <main>
+    <h1>Find in Jamabandi</h1>
+    <p class="subtitle">
+      Looks up a parcel on the Haryana land-records portal and copies the Nakal text back here.
+      A Chrome window will open and drive the form for you — please don't interact with it while it's running.
+    </p>
+    <div class="params">
+      <div><strong>Search:</strong> By Kharsa</div>
+      <div><strong>District:</strong> अम्बाला</div>
+      <div><strong>Tehsil:</strong> अम्बालाछावनी</div>
+      <div><strong>Village:</strong> नगल</div>
+      <div><strong>Year:</strong> 2017-2018</div>
+      <div><strong>Kharsa:</strong> 13//26/3/13</div>
+    </div>
+    <button id="findBtn" class="primary">Find in Jamabandi</button>
+    <div id="statusRow" class="status-row">
+      <span class="dot"></span>
+      <span id="statusText">Idle</span>
+    </div>
+    <div class="result-block">
+      <div class="result-label-row">
+        <label for="result">Nakal text</label>
+        <button id="copyBtn" class="copy" type="button">Copy</button>
+      </div>
+      <textarea id="result" readonly placeholder="Result will appear here after the lookup completes…"></textarea>
+    </div>
+    <div id="ownerBlock" class="owner-block">
+      <label for="ownerName">Owner name</label>
+      <div class="owner-row">
+        <input id="ownerName" type="text" placeholder="Enter owner name to check" autocomplete="off" />
+        <button id="checkOwnerBtn" class="primary" type="button">Check owner</button>
+      </div>
+      <div id="ownerResult" class="owner-result"></div>
+    </div>
+  </main>
+  <script src="jamabandi.js"></script>
+</body>
+</html>

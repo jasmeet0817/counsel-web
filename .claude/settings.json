@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(docker info *)",
-      "Bash(docker compose *)"
+      "Bash(docker compose *)",
+      "Bash(grep -E '\\\\.\\(html|js\\)$')",
+      "Bash(node -e \"require\\('./jamabandi/automation'\\); console.log\\('automation loaded ok'\\); require\\('./jamabandi/captcha'\\); console.log\\('captcha loaded ok'\\);\")",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3003/jamabandi_nic/)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3003/jamabandi_nic/jamabandi.js)",
+      "Bash(node --check /Users/jesse/projects/consel/counsel-web/jamabandi/automation.js)"
     ]
   }
 }
