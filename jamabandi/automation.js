@@ -176,7 +176,6 @@ async function attemptCaptchaAndNakal(browser, page, log, dialogState) {
   if (winner.kind === 'popup' && winner.page) {
     const nakalPage = winner.page;
     log('  Nakal popup detected; waiting for content…');
-    await nakalPage.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }).catch(() => null);
     await nakalPage
       .waitForFunction(() => document.body && document.body.innerText.length > 200, { timeout: 30000 })
       .catch(() => null);

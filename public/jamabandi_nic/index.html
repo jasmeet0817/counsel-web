@@ -88,6 +88,19 @@
     .status-row.error .dot { background: var(--red); }
     .status-row.error { color: var(--red); }
     @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .owner-thinking {
+      display: none; align-items: center; gap: 8px;
+      margin-top: 14px; font-size: 0.88rem; color: var(--text-muted);
+    }
+    .owner-thinking.visible { display: flex; }
+    .owner-thinking-spinner {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid var(--border-mid);
+      border-top-color: var(--red);
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
     .result-block { margin-top: 28px; }
     .result-label-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -201,6 +214,10 @@
       <div class="owner-row">
         <input id="ownerName" type="text" placeholder="Enter owner name to check" autocomplete="off" />
         <button id="checkOwnerBtn" class="primary" type="button">Check owner</button>
+      </div>
+      <div id="ownerThinking" class="owner-thinking">
+        <div class="owner-thinking-spinner"></div>
+        <span>Thinking...</span>
       </div>
       <div id="ownerResult" class="owner-result"></div>
     </div>

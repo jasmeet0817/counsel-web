@@ -8,6 +8,7 @@
   const ownerName = document.getElementById('ownerName');
   const checkOwnerBtn = document.getElementById('checkOwnerBtn');
   const ownerResult = document.getElementById('ownerResult');
+  const ownerThinking = document.getElementById('ownerThinking');
 
   function showOwnerResult(content, isError) {
     ownerResult.innerHTML = '';
@@ -123,6 +124,46 @@
     }
   });
 
+  async function parseJsonResponse(res) {
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) { /* non-json */ }
+    return { text, data };
+  }
+
+  function extractError(data, text, status) {
+    if (data) {
+      if (data.message) return data.message;
+      if (data.error) return data.error;
+      if (data.errors) {
+        const parts = [];
+        for (const k of Object.keys(data.errors)) {
+          const v = data.errors[k];
+          parts.push(Array.isArray(v) ? v.join(', ') : String(v));
+        }
+        if (parts.length) return parts.join('; ');
+      }
+    }
+    return text || `HTTP ${status}`;
+  }
+
+  async function pollOwnerCheck(checkId) {
+    const intervalMs = 1500;
+    while (true) {
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      const res = await fetch(`/counsel/check_jamabandi_ownership/${encodeURIComponent(checkId)}`);
+      const { text, data } = await parseJsonResponse(res);
+      if (!res.ok) {
+        throw new Error(extractError(data, text, res.status));
+      }
+      if (!data) throw new Error('Empty response from server.');
+      if (data.status === 'completed' || data.status === 'failed') {
+        return data;
+      }
+      // in_progress / not_started → keep polling
+    }
+  }
+
   async function runOwnerCheck() {
     const name = ownerName.value.trim();
     const nakal = result.value;
@@ -139,24 +180,33 @@
     const prevLabel = checkOwnerBtn.textContent;
     checkOwnerBtn.textContent = 'Checking…';
     hideOwnerResult();
+    ownerThinking.classList.add('visible');
     try {
       const res = await fetch('/counsel/check_jamabandi_ownership', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ owner_name: name, nakal }),
       });
-      const text = await res.text();
-      let data = null;
-      try { data = text ? JSON.parse(text) : null; } catch (_) { /* non-json */ }
+      const { text, data } = await parseJsonResponse(res);
       if (!res.ok) {
-        const msg = (data && (data.error || data.message)) || text || `HTTP ${res.status}`;
-        showOwnerResult(`Error: ${msg}`, true);
+        showOwnerResult(`Error: ${extractError(data, text, res.status)}`, true);
         return;
       }
-      showOwnerResult(data || (text || 'OK'), false);
+      const checkId = data && data.check_id;
+      if (!checkId) {
+        showOwnerResult('Server did not return a check id.', true);
+        return;
+      }
+      const finalData = await pollOwnerCheck(checkId);
+      if (finalData.status === 'completed') {
+        showOwnerResult(finalData, false);
+      } else {
+        showOwnerResult(`Error: ${finalData.message || 'Check failed.'}`, true);
+      }
     } catch (err) {
       showOwnerResult(`Network error: ${err.message || err}`, true);
     } finally {
+      ownerThinking.classList.remove('visible');
       checkOwnerBtn.disabled = false;
       checkOwnerBtn.textContent = prevLabel;
     }
