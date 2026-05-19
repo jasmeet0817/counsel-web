@@ -16,24 +16,10 @@
       <span class="brand-name">Counsel</span>
     </a>
     <nav class="site-nav" aria-label="Primary">
-      <a href="/app.html">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-        Create Memorandums
-      </a>
-      <a class="nav-cta" href="/writ_petitions/mandamus/">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-        </svg>
-        Create Petitions
-      </a>
+      <a href="#features">Features</a>
+      <a href="#clients">Clients</a>
+      <a href="#workflow">AI Agent</a>
+      <a class="nav-cta" href="/app.html">Open App</a>
     </nav>
   </header>
 
@@ -48,8 +34,8 @@
       </h1>
       <p class="hero-sub">
         Counsel is the AI legal assistant built for lawyers. Put a team of
-        specialized agents behind every matter — summarizing meetings, drafting
-        memos, and surfacing the next move, so you can focus on the law.
+        specialized agents behind every matter — drafting memos, adapting
+        templates, extracting land records, and surfacing the next move.
       </p>
       <div class="hero-ctas">
         <a class="btn btn-primary" href="/app.html">
@@ -60,15 +46,121 @@
       </div>
     </section>
 
-    <!-- Features ─────────────────────────────────────── -->
+    <!-- Clients ─────────────────────────────────────── -->
+    <section class="clients" id="clients">
+      <div class="section-head">
+        <div class="section-eyebrow">Clients</div>
+        <h2 class="section-title">Built with small law firms in India</h2>
+        <p class="section-sub">
+          Three firms across corporate, criminal, and property law use Counsel
+          every day. Each tool below was shaped by their workflow.
+        </p>
+      </div>
+
+      <div class="client-grid">
+        <article class="client-card">
+          <div class="client-tag">Corporate Law</div>
+          <h3>LKS</h3>
+          <p class="client-meta">
+            <a href="https://www.lkslaw.com/" target="_blank" rel="noopener">lkslaw.com</a>
+          </p>
+          <p class="client-bio">
+            A corporate law firm working on complex transactional drafting. They
+            use Counsel's <strong>Draft Playground</strong> to create and edit
+            long-form drafts side-by-side with AI.
+          </p>
+          <a class="client-link" href="/draft_playground/">Open Draft Playground →</a>
+        </article>
+
+        <article class="client-card">
+          <div class="client-tag">Criminal Law</div>
+          <h3>Naveen Gupta</h3>
+          <p class="client-meta">Delhi · Independent practitioner</p>
+          <p class="client-bio">
+            A Delhi-based criminal lawyer who needs fast, accurate property-record
+            drafts. Uses Counsel's <strong>Jamabandi draft</strong> tool to pull
+            land data into petitions in minutes instead of days.
+          </p>
+          <a class="client-link" href="/jamabandi_nic/">Open Jamabandi Lookup →</a>
+        </article>
+
+        <article class="client-card">
+          <div class="client-tag">Property &amp; Small Business</div>
+          <h3>Paramjit Singh &amp; Associates</h3>
+          <p class="client-meta">Ambala · Small business law firm</p>
+          <p class="client-bio">
+            A small business law firm handling high volumes of land-owner
+            verifications. Uses Counsel's <strong>AI agent</strong> to
+            automatically extract land owner data end-to-end from raw documents.
+          </p>
+          <a class="client-link" href="#workflow">See the agent workflow →</a>
+        </article>
+      </div>
+    </section>
+
+   <!-- Features ─────────────────────────────────────── -->
     <section class="features" id="features">
       <div class="section-head">
         <div class="section-eyebrow">Features</div>
         <h2 class="section-title">A team of agents, on every matter</h2>
       </div>
 
-      <div class="feature-grid">
-        <article class="feature-card">
+      <div class="feature-grid feature-grid--3">
+        <a class="feature-card feature-card--link" href="/draft_playground/">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="8" y1="13" x2="16" y2="13"/>
+              <line x1="8" y1="17" x2="16" y2="17"/>
+            </svg>
+          </div>
+          <h3>Draft Playground</h3>
+          <p>Open a .docx, chat with an AI editor, and refine drafts side-by-side. Built for corporate drafting workflows.</p>
+          <span class="feature-link">Open Draft Playground →</span>
+        </a>
+
+        <a class="feature-card feature-card--link" href="/jamabandi_nic/">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3>Jamabandi Lookup</h3>
+          <p>Search Jamabandi land records directly from the browser and pull structured data into your drafts.</p>
+          <span class="feature-link">Open Jamabandi →</span>
+        </a>
+
+        <a class="feature-card feature-card--link" href="/template_adaptation/">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <h3>Template Adaptation</h3>
+          <p>Take a template and adapt it to the facts of a new matter — fields auto-populated, language adjusted.</p>
+          <span class="feature-link">Open Template Adaptation →</span>
+        </a>
+
+        <a class="feature-card feature-card--link" href="/writ_petitions/mandamus/">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <h3>Writ Petitions — Mandamus</h3>
+          <p>Draft writ of mandamus petitions with an AI walkthrough of facts, prayer, and grounds.</p>
+          <span class="feature-link">Create Petition →</span>
+        </a>
+
+        <a class="feature-card feature-card--link" href="/app.html">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
@@ -78,45 +170,84 @@
             </svg>
           </div>
           <h3>Meeting Summary</h3>
-          <p>Record client calls and depositions. Counsel produces clean, structured summaries you can drop straight into your matter file.</p>
-        </article>
+          <p>Record client calls and depositions. Counsel produces clean, structured summaries with next steps.</p>
+          <span class="feature-link">Record a Meeting →</span>
+        </a>
 
-        <article class="feature-card">
+        <a class="feature-card feature-card--link" href="#workflow">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-              <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+              <path d="M3 3h7v7H3z"/>
+              <path d="M14 3h7v7h-7z"/>
+              <path d="M14 14h7v7h-7z"/>
+              <path d="M3 14h7v7H3z"/>
+              <line x1="10" y1="6.5" x2="14" y2="6.5"/>
+              <line x1="17.5" y1="10" x2="17.5" y2="14"/>
+              <line x1="14" y1="17.5" x2="10" y2="17.5"/>
             </svg>
           </div>
-          <h3>Next-Step Identification</h3>
-          <p>Every conversation ends with a list of owed actions, open questions, and deadlines — so nothing slips between calls.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="8" y1="13" x2="16" y2="13"/>
-              <line x1="8" y1="17" x2="16" y2="17"/>
-              <line x1="8" y1="9" x2="10" y2="9"/>
-            </svg>
-          </div>
-          <h3>Memorandum Drafting</h3>
-          <p>Turn notes and research into first-draft memos in your voice. Edit the last mile instead of the blank page.</p>
-        </article>
-
-        <article class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-          <h3>Case Research</h3>
-          <p>Ask in plain English. Counsel pulls relevant precedents, statutes, and commentary, with citations you can verify.</p>
-        </article>
+          <h3>Land Records AI Agent</h3>
+          <p>Autonomous agent that ingests documents, queries government portals, and returns clean owner data.</p>
+          <span class="feature-link">See how it works →</span>
+        </a>
       </div>
+    </section>
+
+    <!-- AI Agent Workflow ─────────────────────────────── -->
+    <section class="workflow" id="workflow">
+      <div class="section-head">
+        <div class="section-eyebrow">AI Agent</div>
+        <h2 class="section-title">How the land-records agent works</h2>
+        <p class="section-sub">
+          An autonomous pipeline that takes raw client documents and returns
+          verified land owner data, ready for a lawyer to draft against.
+        </p>
+      </div>
+
+      <ol class="step-list">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Lawyer uploads documents</h3>
+            <p>Sale deeds, FIRs, identity proofs, or any paperwork the client has on hand. PDFs and images are both accepted.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Data extracted from documents</h3>
+            <p>The agent reads each document and pulls structured fields — names, khasra numbers, village, tehsil, district, dates — with citations back to the source page.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Data entered into the government website</h3>
+            <p>The agent logs into the relevant land-records portal and fills in the extracted fields, navigating dropdowns and search forms automatically.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Output from the website captured</h3>
+            <p>Once results load, the agent captures the response page — including any Jamabandi records, mutation entries, or registry hits.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3>Data extracted from the government output</h3>
+            <p>The captured page is parsed back into clean, structured rows — owner names, shares, parent records, and dates — normalized for downstream drafting.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h3>Available on the portal for lawyers to draft</h3>
+            <p>Verified land-owner data lands on the matter in Counsel, where the lawyer can drop it directly into a draft using the Draft Playground or template tools.</p>
+          </div>
+        </li>
+      </ol>
     </section>
 
     <!-- Who we are ───────────────────────────────────── -->

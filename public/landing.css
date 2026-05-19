@@ -172,6 +172,14 @@ a {
   line-height: 1.2;
 }
 
+.section-sub {
+  max-width: 620px;
+  margin: 16px auto 0;
+  font-size: 1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 /* ── Hero ────────────────────────────────────────── */
 .hero {
   max-width: var(--max);
@@ -224,6 +232,10 @@ a {
   gap: 20px;
 }
 
+.feature-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .feature-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -261,6 +273,198 @@ a {
 
 .feature-card p {
   font-size: 0.93rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.feature-card--link {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-card--link:hover {
+  border-color: var(--red);
+}
+
+.feature-link {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--red);
+  letter-spacing: 0.2px;
+  transition: opacity 0.15s;
+}
+
+.feature-card--link:hover .feature-link {
+  opacity: 0.85;
+}
+
+/* ── Clients ─────────────────────────────────────── */
+.clients {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 64px 32px;
+}
+
+.client-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.client-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.client-card:hover {
+  border-color: var(--border-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.client-tag {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 4px 10px;
+  background: var(--red-dim);
+  border: 1px solid rgba(229, 57, 53, 0.2);
+  color: var(--red);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.client-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.client-meta {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.client-meta a {
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-mid);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.client-meta a:hover {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+.client-bio {
+  margin-top: 16px;
+  font-size: 0.93rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.client-bio strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.client-link {
+  margin-top: auto;
+  padding-top: 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--red);
+  transition: opacity 0.15s;
+}
+
+.client-link:hover {
+  opacity: 0.85;
+}
+
+/* ── Workflow steps ──────────────────────────────── */
+.workflow {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 64px 32px;
+}
+
+.step-list {
+  list-style: none;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+
+.step-list::before {
+  content: '';
+  position: absolute;
+  left: 23px;
+  top: 24px;
+  bottom: 24px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--red) 0%, var(--border) 100%);
+  opacity: 0.35;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  align-items: flex-start;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.step:hover {
+  border-color: var(--border-mid);
+  transform: translateY(-1px);
+}
+
+.step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--red-dim);
+  border: 1px solid rgba(229, 57, 53, 0.25);
+  color: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  position: relative;
+  z-index: 1;
+}
+
+.step-body h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
+}
+
+.step-body p {
+  font-size: 0.92rem;
   color: var(--text-muted);
   line-height: 1.6;
 }
@@ -430,8 +634,32 @@ a {
   }
 
   .feature-grid,
-  .team-grid {
+  .feature-grid--3,
+  .team-grid,
+  .client-grid {
     grid-template-columns: 1fr;
+  }
+
+  .clients,
+  .workflow {
+    padding: 48px 20px;
+  }
+
+  .step {
+    padding: 18px 18px;
+    grid-template-columns: 40px 1fr;
+    gap: 14px;
+  }
+
+  .step-list::before {
+    left: 19px;
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.9rem;
   }
 
   .cta-strip {
