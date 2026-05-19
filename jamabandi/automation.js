@@ -202,10 +202,11 @@ async function runJamabandiLookup({ onStatus = () => {}, options = {} } = {}) {
     console.log(`[jamabandi] ${message}`);
   };
 
+  const headful = process.env.JAMABANDI_HEADFUL === '1';
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: !headful,
     defaultViewport: null,
-    args: ['--start-maximized'],
+    args: headful ? ['--start-maximized'] : [],
   });
 
   try {
