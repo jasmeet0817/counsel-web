@@ -23,10 +23,26 @@ const SEL = {
   captchaInput: '#ctl00_ContentPlaceHolder1_txtKhasraCaptcha',
 };
 
-const SUCCESS_HEADER_HINTS = ['Khewat', 'Khatoni', 'मालिक', 'खेवट', 'खतौनी'];
-
 const FIELD_DELAY_MS = 2000;
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const isContextDestroyed = (err) =>
+  err && /Execution context was destroyed|Cannot find context|detached Frame/i.test(err.message);
+
+async function evaluateWithRetry(target, fn, { attempts = 4, delayMs = 500, log } = {}) {
+  let lastErr;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await target.evaluate(fn);
+    } catch (err) {
+      if (!isContextDestroyed(err)) throw err;
+      lastErr = err;
+      if (log) log(`  evaluate retry ${i + 1}/${attempts} after navigation (${err.message})`);
+      await sleep(delayMs);
+    }
+  }
+  throw lastErr;
+}
 
 async function selectByVisibleText(page, selector, wantedText, log) {
   await page.waitForSelector(selector, { timeout: 30000 });
@@ -50,34 +66,44 @@ async function selectByVisibleText(page, selector, wantedText, log) {
   }
   log(`  → ${selector} = "${wantedText}" (value=${value})`);
   await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }),
+    page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 60000 }),
     page.select(selector, value),
   ]);
 }
 
-async function classifyResult(page) {
-  return page.evaluate((hints) => {
+async function classifyResult(page, log) {
+  return evaluateWithRetry(page, () => {
+    const HINTS = ['Khewat', 'Khatoni', 'मालिक', 'खेवट', 'खतौनी'];
     if (document.querySelector('#notfound')) return { kind: 'error_page' };
     const captchaInput = document.querySelector('#ctl00_ContentPlaceHolder1_txtKhasraCaptcha');
     const text = document.body.innerText || '';
-    const hitHint = hints.some((h) => text.includes(h));
-    if (!captchaInput && hitHint) return { kind: 'success', textLength: text.length };
+    const hitHint = HINTS.some((h) => text.includes(h));
+    if (!captchaInput && hitHint) return { kind: 'success', text };
     if (captchaInput) return { kind: 'wrong_captcha' };
-    if (hitHint) return { kind: 'success', textLength: text.length };
+    if (hitHint) return { kind: 'success', text };
     return { kind: 'unknown', textLength: text.length };
-  }, SUCCESS_HEADER_HINTS);
+  }, { log });
 }
 
 async function runFormFlow(page, opts, log) {
   log('Loading Jamabandi NakalRecord page…');
-  await page.goto(URL, { waitUntil: 'networkidle2', timeout: 90000 });
+  const gotoStart = Date.now();
+  const gotoHeartbeat = setInterval(() => {
+    console.log(`[jamabandi]   …still loading (${Math.round((Date.now() - gotoStart) / 1000)}s)`);
+  }, 5000);
+  try {
+    await page.goto(URL, { waitUntil: 'domcontentloaded', timeout: 90000 });
+    console.log(`[jamabandi] goto returned after ${Date.now() - gotoStart}ms; url=${page.url()}`);
+  } finally {
+    clearInterval(gotoHeartbeat);
+  }
 
   log('Selecting "By Khasra/Survey No." search type…');
   await page.waitForSelector(SEL.byKharsa, { timeout: 30000 });
   const isChecked = await page.$eval(SEL.byKharsa, (el) => el.checked);
   if (!isChecked) {
     await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }).catch(() => null),
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => null),
       page.click(SEL.byKharsa),
     ]);
   }
@@ -114,7 +140,7 @@ async function runFormFlow(page, opts, log) {
   if (viewBtn) {
     log('Clicking View button…');
     await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 60000 }).catch(() => null),
+      page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => null),
       viewBtn.click(),
     ]);
   }
@@ -152,6 +178,9 @@ async function attemptCaptchaAndNakal(browser, page, log, dialogState) {
   await page.evaluate(() => {
     // eslint-disable-next-line no-undef
     __doPostBack('ctl00$ContentPlaceHolder1$GridView1', 'Select$0');
+  }).catch((err) => {
+    if (!isContextDestroyed(err)) throw err;
+    log('  __doPostBack navigated away (expected)');
   });
 
   const POPUP_TIMEOUT_MS = 8000;
@@ -177,9 +206,14 @@ async function attemptCaptchaAndNakal(browser, page, log, dialogState) {
     const nakalPage = winner.page;
     log('  Nakal popup detected; waiting for content…');
     await nakalPage
-      .waitForFunction(() => document.body && document.body.innerText.length > 200, { timeout: 30000 })
+      .waitForFunction(
+        () => document.readyState === 'complete'
+          && document.body
+          && document.body.innerText.length > 200,
+        { timeout: 30000 },
+      )
       .catch(() => null);
-    const text = (await nakalPage.evaluate(() => document.body.innerText)).trim();
+    const text = (await evaluateWithRetry(nakalPage, () => document.body.innerText, { log })).trim();
     await nakalPage.close().catch(() => null);
     return { kind: 'success', text };
   }
@@ -192,7 +226,7 @@ async function attemptCaptchaAndNakal(browser, page, log, dialogState) {
     return { kind: 'wrong_captcha', via: 'dialog' };
   }
 
-  return classifyResult(page);
+  return classifyResult(page, log);
 }
 
 async function runJamabandiLookup({ onStatus = () => {}, options = {} } = {}) {
@@ -203,14 +237,45 @@ async function runJamabandiLookup({ onStatus = () => {}, options = {} } = {}) {
   };
 
   const headful = process.env.JAMABANDI_HEADFUL === '1';
+  console.log(`[jamabandi] launching puppeteer (headful=${headful})…`);
   const browser = await puppeteer.launch({
     headless: !headful,
     defaultViewport: null,
-    args: headful ? ['--start-maximized'] : [],
+    args: [
+      '--disable-blink-features=AutomationControlled',
+      ...(headful ? ['--start-maximized'] : []),
+    ],
   });
+  console.log(`[jamabandi] puppeteer launched; version=${await browser.version()}`);
 
   try {
     const page = (await browser.pages())[0] || (await browser.newPage());
+    await page.setUserAgent(
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36',
+    );
+
+    page.on('request', (req) => {
+      const url = req.url();
+      if (url.startsWith('data:')) return;
+      console.log(`[jamabandi]   →req ${req.method()} ${url}`);
+    });
+    page.on('response', (res) => {
+      const url = res.url();
+      if (url.startsWith('data:')) return;
+      console.log(`[jamabandi]   ←res ${res.status()} ${url}`);
+    });
+    page.on('requestfailed', (req) => {
+      const err = req.failure();
+      console.log(`[jamabandi]   ✗req ${req.url()} — ${err && err.errorText}`);
+    });
+    page.on('pageerror', (err) => {
+      console.log(`[jamabandi]   pageerror: ${err.message}`);
+    });
+    page.on('framenavigated', (frame) => {
+      if (frame === page.mainFrame()) {
+        console.log(`[jamabandi]   navigated → ${frame.url()}`);
+      }
+    });
 
     const dialogState = { lastMessage: null };
     page.on('dialog', async (dialog) => {
