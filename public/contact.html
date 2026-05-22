@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Counsel</title>
+  <meta name="description" content="Get in touch with the Counsel team — book a demo, ask a question, or chat about your practice.">
+  <link rel="icon" href="favicon.jpg" type="image/jpeg">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <a class="brand" href="/">
+      <img src="favicon.jpg" alt="" class="brand-logo">
+      <span class="brand-name">Counsel</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/features.html">Features</a>
+      <a href="/pricing.html">Pricing</a>
+      <a href="/contact.html" aria-current="page">Contact</a>
+      <a class="nav-cta" href="/app.html">Open App</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="page-hero">
+      <div class="section-eyebrow">Contact</div>
+      <h1>Let's talk about your practice</h1>
+      <p>
+        Tell us what you're working on — we'll get back within a day. Or
+        connect directly on LinkedIn.
+      </p>
+    </section>
+
+    <section class="contact">
+      <form class="contact-form" id="contact-form" novalidate>
+        <div class="form-field">
+          <label for="contact-name">Name</label>
+          <input type="text" id="contact-name" name="name" required>
+        </div>
+        <div class="form-field">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" name="email" required>
+        </div>
+        <div class="form-field">
+          <label for="contact-firm">Firm</label>
+          <input type="text" id="contact-firm" name="firm">
+        </div>
+        <div class="form-field">
+          <label for="contact-phone">Phone (optional)</label>
+          <input type="tel" id="contact-phone" name="phone">
+        </div>
+        <div class="form-field">
+          <label for="contact-message">How can we help?</label>
+          <textarea id="contact-message" name="message" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary contact-form__submit">
+          Send Message
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <div class="contact-form__status" id="contact-status" role="status" aria-live="polite"></div>
+      </form>
+
+      <aside class="contact-aside">
+        <div>
+          <h3>Email</h3>
+          <p><a href="mailto:contact@ai-counsel.com" style="color: var(--red);">contact@ai-counsel.com</a></p>
+        </div>
+
+        <div>
+          <h3>Connect on LinkedIn</h3>
+        </div>
+
+        <a class="contact-card" href="https://www.linkedin.com/in/jasmeet-singh-22531348/" target="_blank" rel="noopener">
+          <img class="avatar" src="images/jasmeet.png" alt="Jasmeet Singh">
+          <div>
+            <div class="contact-card__name">Jasmeet Singh</div>
+            <div class="contact-card__role">Co-founder · Engineering</div>
+            <div class="contact-card__link">View LinkedIn →</div>
+          </div>
+        </a>
+
+        <a class="contact-card" href="https://www.linkedin.com/in/paritosh-chauhan-1a50845a/" target="_blank" rel="noopener">
+          <img class="avatar" src="images/yash.png" alt="Paritosh Chauhan">
+          <div>
+            <div class="contact-card__name">Paritosh Chauhan</div>
+            <div class="contact-card__role">Co-founder · Legal</div>
+            <div class="contact-card__link">View LinkedIn →</div>
+          </div>
+        </a>
+      </aside>
+    </section>
+
+  </main>
+
+  <footer class="site-footer site-footer--rich">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <div class="footer-brand">
+          <img src="favicon.jpg" alt="" class="brand-logo">
+          <span>Counsel</span>
+        </div>
+        <p>The AI legal assistant built for lawyers. Specialized agents for drafting, land records, and meeting summaries.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="/features.html">Features</a></li>
+          <li><a href="/pricing.html">Pricing</a></li>
+          <li><a href="/app.html">Open App</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="/contact.html">Contact</a></li>
+          <li><a href="/#team">Team</a></li>
+          <li><a href="https://www.linkedin.com/in/jasmeet-singh-22531348/" target="_blank" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="mailto:contact@ai-counsel.com">contact@ai-counsel.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-inner">
+      <div class="footer-meta">
+        <span>&copy; 2026 Counsel</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.getElementById('contact-form');
+    const status = document.getElementById('contact-status');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const message = form.message.value.trim();
+
+      if (!name || !email || !message) {
+        status.textContent = 'Please fill in your name, email, and message.';
+        status.classList.remove('is-success');
+        return;
+      }
+
+      status.textContent = 'Thanks — your message has been sent. We\'ll be in touch shortly.';
+      status.classList.add('is-success');
+      form.reset();
+    });
+  </script>
+
+</body>
+</html>

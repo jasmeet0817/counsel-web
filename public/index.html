@@ -7,27 +7,20 @@
   <meta name="description" content="Counsel is the AI legal assistant that helps lawyers level up their practice with AI agents that work for them.">
   <link rel="icon" href="favicon.jpg" type="image/jpeg">
   <link rel="stylesheet" href="landing.css">
+  <script src="/components.js" defer></script>
 </head>
 <body>
 
-  <header class="site-header">
-    <a class="brand" href="/">
-      <img src="favicon.jpg" alt="" class="brand-logo">
-      <span class="brand-name">Counsel</span>
-    </a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="#features">Features</a>
-      <a href="#clients">Clients</a>
-      <a href="#workflow">AI Agent</a>
-      <a class="nav-cta" href="/app.html">Open App</a>
-    </nav>
-  </header>
+  <div id="site-header"></div>
 
   <main>
 
     <!-- Hero ─────────────────────────────────────────── -->
     <section class="hero">
-      <div class="hero-eyebrow">AI Legal Assistant</div>
+      <a class="hero-eyebrow-link" href="#workflow">
+        <strong>New</strong>
+        <span>Land Records Agent is live →</span>
+      </a>
       <h1 class="hero-title">
         Level up your legal practice with<br>
         <span class="accent">AI agents that work for you</span>
@@ -38,12 +31,131 @@
         templates, extracting land records, and surfacing the next move.
       </p>
       <div class="hero-ctas">
-        <a class="btn btn-primary" href="/app.html">
+        <a class="btn btn-primary" href="/contact.html">
           Get Started
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
         <a class="btn btn-ghost" href="#features">See what it does</a>
       </div>
+    </section>
+
+    <!-- Logo strip ───────────────────────────────────── -->
+    <section class="logo-strip" aria-label="Customers">
+      <div class="logo-strip-label">Trusted by lawyers in India</div>
+      <div class="logo-strip-row">
+        <span class="logo-strip-chip">LKS</span>
+        <span class="logo-strip-chip">Paritosh Chauhan · Delhi</span>
+        <span class="logo-strip-chip">Paramjit Singh &amp; Associates</span>
+      </div>
+    </section>
+
+    <!-- Features ─────────────────────────────────────── -->
+    <section class="features" id="features">
+      <div class="section-head">
+        <div class="section-eyebrow">Features</div>
+        <h2 class="section-title">A team of agents, on every matter</h2>
+      </div>
+
+      <div class="feature-section">
+        <div class="feature-section__media">
+          <img src="/artifacts/draft_playground.gif" alt="Draft Playground" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Draft Playground mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Draft Playground</div>
+          <h3>Edit long-form drafts side-by-side with AI</h3>
+          <p>
+            Open a .docx, chat with an AI editor about specific clauses, and
+            apply edits in place. Built for corporate transactional drafting
+            where the document is the unit of work.
+          </p>
+          <a class="btn btn-ghost" href="/draft_playground/">Open Draft Playground →</a>
+        </div>
+      </div>
+
+      <div class="feature-section feature-section--reverse">
+        <div class="feature-section__media">
+          <img src="/artifacts/jamabandi.gif" alt="Jamabandi Lookup" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Jamabandi Lookup mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Jamabandi Lookup</div>
+          <h3>Pull land records into drafts in minutes</h3>
+          <p>
+            Search Jamabandi by khasra, owner name, or village from your browser.
+            Results come back as structured rows — owner names, shares,
+            mutations — ready to drop into a petition.
+          </p>
+          <a class="btn btn-ghost" href="/jamabandi_nic/">Open Jamabandi →</a>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <div class="feature-section__media">
+          <img src="/images/features/template-adaptation.png" alt="Template Adaptation" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Template Adaptation mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Template Adaptation</div>
+          <h3>Turn a template into a matter-ready draft</h3>
+          <p>
+            Upload a template, point at the matter, and Counsel adapts the
+            language to fit. Placeholders auto-fill from the matter file, and
+            clauses adjust to the facts you provide.
+          </p>
+          <a class="btn btn-ghost" href="/template_adaptation/">Open Template Adaptation →</a>
+        </div>
+      </div>
+
+      <div class="feature-section feature-section--reverse">
+        <div class="feature-section__media">
+          <img src="/images/features/writ-petitions.png" alt="Writ Petitions" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Writ Petitions mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Writ Petitions</div>
+          <h3>Walk through a mandamus petition in one sitting</h3>
+          <p>
+            A guided builder for writs of mandamus — facts, grounds, prayer,
+            annexures. The AI prompts for what's missing and produces a clean,
+            court-formatted draft at the end.
+          </p>
+          <a class="btn btn-ghost" href="/writ_petitions/mandamus/">Create Petition →</a>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <div class="feature-section__media">
+          <img src="/images/features/meeting-summary.png" alt="Meeting Summary" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Meeting Summary mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Meeting Summary</div>
+          <h3>Record client calls, get structured notes back</h3>
+          <p>
+            Record a client meeting or deposition in the browser. Counsel
+            produces a clean summary with key points, action items, and next
+            steps — ready to share with the team or the matter file.
+          </p>
+          <a class="btn btn-ghost" href="/app.html">Record a Meeting →</a>
+        </div>
+      </div>
+
+      <div class="feature-section feature-section--reverse">
+        <div class="feature-section__media">
+          <img src="/images/features/land-records-agent.png" alt="Land Records AI Agent" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'feature-section__media-placeholder',textContent:'Land Records Agent mockup'}))">
+        </div>
+        <div class="feature-section__body">
+          <div class="section-eyebrow">Land Records AI Agent</div>
+          <h3>An autonomous pipeline from documents to verified data</h3>
+          <p>
+            Hand over the raw documents a client gave you. The agent reads them,
+            queries the government portal, captures the response, and returns
+            clean, normalized owner data — ready for you to draft against.
+          </p>
+          <a class="btn btn-ghost" href="#workflow">See how it works →</a>
+        </div>
+      </div>
+
+      <p class="features-teaser">
+        We're adding new features daily.
+        <a href="/contact.html">Connect</a> to get yours on the roadmap.
+      </p>
     </section>
 
     <!-- Clients ─────────────────────────────────────── -->
@@ -53,7 +165,7 @@
         <h2 class="section-title">Built with small law firms in India</h2>
         <p class="section-sub">
           Three firms across corporate, criminal, and property law use Counsel
-          every day. Each tool below was shaped by their workflow.
+          every day. Each tool was shaped by their workflow.
         </p>
       </div>
 
@@ -95,101 +207,6 @@
           </p>
           <a class="client-link" href="#workflow">See the agent workflow →</a>
         </article>
-      </div>
-    </section>
-
-   <!-- Features ─────────────────────────────────────── -->
-    <section class="features" id="features">
-      <div class="section-head">
-        <div class="section-eyebrow">Features</div>
-        <h2 class="section-title">A team of agents, on every matter</h2>
-      </div>
-
-      <div class="feature-grid feature-grid--3">
-        <a class="feature-card feature-card--link" href="/draft_playground/">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="8" y1="13" x2="16" y2="13"/>
-              <line x1="8" y1="17" x2="16" y2="17"/>
-            </svg>
-          </div>
-          <h3>Draft Playground</h3>
-          <p>Open a .docx, chat with an AI editor, and refine drafts side-by-side. Built for corporate drafting workflows.</p>
-          <span class="feature-link">Open Draft Playground →</span>
-        </a>
-
-        <a class="feature-card feature-card--link" href="/jamabandi_nic/">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="7"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </div>
-          <h3>Jamabandi Lookup</h3>
-          <p>Search Jamabandi land records directly from the browser and pull structured data into your drafts.</p>
-          <span class="feature-link">Open Jamabandi →</span>
-        </a>
-
-        <a class="feature-card feature-card--link" href="/template_adaptation/">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="7" height="7"/>
-              <rect x="14" y="3" width="7" height="7"/>
-              <rect x="14" y="14" width="7" height="7"/>
-              <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-          </div>
-          <h3>Template Adaptation</h3>
-          <p>Take a template and adapt it to the facts of a new matter — fields auto-populated, language adjusted.</p>
-          <span class="feature-link">Open Template Adaptation →</span>
-        </a>
-
-        <a class="feature-card feature-card--link" href="/writ_petitions/mandamus/">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <line x1="16" y1="13" x2="8" y2="13"/>
-              <line x1="16" y1="17" x2="8" y2="17"/>
-            </svg>
-          </div>
-          <h3>Writ Petitions — Mandamus</h3>
-          <p>Draft writ of mandamus petitions with an AI walkthrough of facts, prayer, and grounds.</p>
-          <span class="feature-link">Create Petition →</span>
-        </a>
-
-        <a class="feature-card feature-card--link" href="/app.html">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" y1="19" x2="12" y2="23"/>
-              <line x1="8" y1="23" x2="16" y2="23"/>
-            </svg>
-          </div>
-          <h3>Meeting Summary</h3>
-          <p>Record client calls and depositions. Counsel produces clean, structured summaries with next steps.</p>
-          <span class="feature-link">Record a Meeting →</span>
-        </a>
-
-        <a class="feature-card feature-card--link" href="#workflow">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 3h7v7H3z"/>
-              <path d="M14 3h7v7h-7z"/>
-              <path d="M14 14h7v7h-7z"/>
-              <path d="M3 14h7v7H3z"/>
-              <line x1="10" y1="6.5" x2="14" y2="6.5"/>
-              <line x1="17.5" y1="10" x2="17.5" y2="14"/>
-              <line x1="14" y1="17.5" x2="10" y2="17.5"/>
-            </svg>
-          </div>
-          <h3>Land Records AI Agent</h3>
-          <p>Autonomous agent that ingests documents, queries government portals, and returns clean owner data.</p>
-          <span class="feature-link">See how it works →</span>
-        </a>
       </div>
     </section>
 
@@ -261,13 +278,15 @@
         <article class="team-card">
           <img class="avatar" src="images/jasmeet.png" alt="Jasmeet Singh">
           <h3>Jasmeet Singh</h3>
+          <a class="linkedin-link" href="https://www.linkedin.com/in/jasmeet-singh-22531348/" target="_blank" rel="noopener noreferrer">Connect with me on LinkedIn</a>
           <p class="team-role">Co-founder · Engineering</p>
           <p class="team-bio">11 years of engineering experience at Google, building products used by hundreds of millions of people.</p>
         </article>
 
         <article class="team-card">
-          <img class="avatar" src="images/yash.png" alt="Naveen">
-          <h3>Naveen Baisoya</h3>
+          <img class="avatar" src="images/yash.png" alt="Paritosh">
+          <h3>Paritosh Chauhan</h3>
+          <a class="linkedin-link" href="https://www.linkedin.com/in/paritosh-chauhan-1a50845a/" target="_blank" rel="noopener noreferrer">Connect with me on LinkedIn</a>
           <p class="team-role">Co-founder · Legal</p>
           <p class="team-bio">13 years as a corporate lawyer. Founder @ Own law firm, with deep experience across transactional and advisory work.</p>
         </article>
@@ -286,19 +305,7 @@
 
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="favicon.jpg" alt="" class="brand-logo">
-        <span>Counsel</span>
-      </div>
-      <div class="footer-meta">
-        <span>&copy; 2026 Counsel</span>
-        <span class="dot">·</span>
-        <a href="mailto:contact@ai-counsel.com">contact@ai-counsel.com</a>
-      </div>
-    </div>
-  </footer>
+  <div id="site-footer"></div>
 
 </body>
 </html>
